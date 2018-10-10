@@ -1,10 +1,11 @@
 package com.parkingsystem.domain.sevice.management;
 
 
-import com.parkingsystem.domain.model.ParkingLot.NewParkingLot;
+import com.parkingsystem.domain.model.management.NewParkingLot;
+import com.parkingsystem.domain.sevice.ApiVersion;
 
 public interface ManagementService {
 
-    void save(NewParkingLot parkingLot, ApiVersion v1);
+    void save(ApiVersion v1, NewParkingLot newParkingLot);
 
 }

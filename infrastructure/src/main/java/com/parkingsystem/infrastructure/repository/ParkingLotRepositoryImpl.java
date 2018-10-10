@@ -1,6 +1,6 @@
 package com.parkingsystem.infrastructure.repository;
 
-import com.parkingsystem.domain.model.ParkingLot.ParkingLotEntity;
+import com.parkingsystem.domain.model.management.ParkingLotEntity;
 import com.parkingsystem.domain.repository.ParkingLotRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;

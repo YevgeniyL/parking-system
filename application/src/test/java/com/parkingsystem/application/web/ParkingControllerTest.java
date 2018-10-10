@@ -1,9 +1,9 @@
 package com.parkingsystem.application.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.parkingsystem.application.controller.v1.ManagementControllerV1;
-import com.parkingsystem.domain.sevice.management.ManagementService;
-import com.parkingsystem.infrastructure.api.v1.management.NewParkingLotApiRequest;
+import com.parkingsystem.application.controller.v1.ParkingControllerV1;
+import com.parkingsystem.domain.sevice.parking.ParkingService;
+import com.parkingsystem.infrastructure.api.v1.pakingasset.NewSessionApiRequest;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,28 +25,27 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 @SpringBootTest
-@MockBean(ManagementService.class)
+@MockBean(ParkingService.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class ManagementControllerTest {
+public class ParkingControllerTest {
 
     @Autowired
-    private ManagementControllerV1 managementV1Controller;
+    private ParkingControllerV1 parkingControllerV1;
     private MockMvc mockMvc;
 
     @BeforeAll
     void setup() {
-        this.mockMvc = MockMvcBuilders.standaloneSetup(managementV1Controller).build();
+        this.mockMvc = MockMvcBuilders.standaloneSetup(parkingControllerV1).build();
     }
 
 
     @Test
-    @DisplayName("Test management controller v1")
+    @DisplayName("Test Parking controller v1")
     void responseTest() throws Exception {
-
-        NewParkingLotApiRequest request = new NewParkingLotApiRequest("SomeURL", true);
+        NewSessionApiRequest request = new NewSessionApiRequest("123xxxx");
         String body = (new ObjectMapper()).valueToTree(request).toString();
         this.mockMvc.perform(
-                MockMvcRequestBuilders.post("/pms/v1/management/parkinglots")
+                MockMvcRequestBuilders.post("/pms/v1/assets/1/sessions")
                         .content(body)
                         .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isCreated())

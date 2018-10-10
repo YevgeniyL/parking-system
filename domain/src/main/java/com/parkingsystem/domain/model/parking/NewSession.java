@@ -1,5 +1,4 @@
-package com.parkingsystem.domain.model.ParkingLot;
-
+package com.parkingsystem.domain.model.parking;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,7 +7,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class NewParkingLot {
-    private String url;
-    private Boolean isEnabled;
+public class NewSession {
+    private  String licensePlateNumber;
 }

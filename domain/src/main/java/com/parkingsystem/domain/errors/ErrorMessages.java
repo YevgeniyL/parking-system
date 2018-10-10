@@ -10,7 +10,7 @@ import lombok.Getter;
 
 @Getter
 public enum ErrorMessages {
-    DOMAIN_ERROR_1001(1001, "Field 'url' is empty"),
+    DOMAIN_ERROR_1001(1001, "Field 'address' is empty"),
     DOMAIN_ERROR_1002(1002, "Field 'isEnable' is empty"),
 
 
