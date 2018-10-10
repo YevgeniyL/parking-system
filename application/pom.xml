@@ -6,7 +6,7 @@
 
     <parent>
         <groupId>com.parkingsystem</groupId>
-        <artifactId>parkingsystem</artifactId>
+        <artifactId>parking-management-system</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
