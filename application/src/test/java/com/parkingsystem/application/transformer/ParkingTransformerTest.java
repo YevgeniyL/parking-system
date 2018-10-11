@@ -12,7 +12,8 @@ public class ParkingTransformerTest {
     @Test
     void newSessionToDomain(){
         String licensePlateNumber = "123xxxx";
-        NewSession newSession = ParkingTransformer.toDomain(new NewSessionApiRequest(licensePlateNumber));
+        ParkingTransformer parkingTransformer = new ParkingTransformer();
+        NewSession newSession = parkingTransformer.toDomain(new NewSessionApiRequest(licensePlateNumber));
         assertEquals(licensePlateNumber,newSession.getLicensePlateNumber());
     }
 }

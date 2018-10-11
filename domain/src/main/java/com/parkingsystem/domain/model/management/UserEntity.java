@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,7 +26,7 @@ public class User {
     @Column(name = "PASSWORD", nullable = false)
     private String password;
 
-    @Column(name = "LICENSE_PLATE_NUMBER")
+    @Column(name = "LICENSE_PLATE_NUMBER", unique = true)
     private String licensePlateNumber;
 
     @Column(name = "CREATED", nullable = false, updatable = false)

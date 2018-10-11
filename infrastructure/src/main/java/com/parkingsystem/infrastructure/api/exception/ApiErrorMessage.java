@@ -8,17 +8,5 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 class ApiErrorMessage {
-    ApiError error;
-
-    public ApiErrorMessage(int status, int errorCode, String message) {
-        this.error = new ApiError(status, errorCode, message);
-    }
-
-    @Getter
-    @AllArgsConstructor
-    private class ApiError {
-        private int status;
-        private int errorCode;
-        private String message;
-    }
+    private String description;
 }

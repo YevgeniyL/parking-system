@@ -5,5 +5,5 @@ import com.parkingsystem.domain.sevice.ApiVersion;
 
 public interface ParkingService {
 
-    void createSession(ApiVersion apiVersion, NewSession newSession, int parkingId);
+    void createSession(ApiVersion apiVersion, NewSession newSession, String parkingAddress);
 }

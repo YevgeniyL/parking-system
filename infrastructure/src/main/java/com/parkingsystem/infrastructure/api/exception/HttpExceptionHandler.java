@@ -15,13 +15,13 @@ import static org.springframework.core.annotation.AnnotatedElementUtils.findMerg
  * Converter domain exceptions to API exception with http-statuses
  */
 @ControllerAdvice
-class CustomExceptionHandler extends ResponseEntityExceptionHandler {
+class HttpExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(ApiException.class)
+    @ExceptionHandler(DomainToHttpExceptionsConverter.class)
     @ResponseBody
-    ResponseEntity<ApiErrorMessage> handleRequestErrorMyException(ApiException exception) {
+    ResponseEntity<ApiErrorMessage> handleRequestErrorMyException(DomainToHttpExceptionsConverter exception) {
         HttpStatus responseStatus = resolveAnnotatedResponseStatus(exception);
-        ApiErrorMessage apiErrorMessage = new ApiErrorMessage(responseStatus.value(), exception.getErrorCode(), exception.getMessage());
+        ApiErrorMessage apiErrorMessage = new ApiErrorMessage(exception.getDescription());
         return new ResponseEntity<>(apiErrorMessage, responseStatus);
     }
 

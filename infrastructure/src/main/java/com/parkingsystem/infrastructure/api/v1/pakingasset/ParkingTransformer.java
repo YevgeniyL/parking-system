@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ParkingTransformer {
-    public static NewSession toDomain(NewSessionApiRequest request) {
+    public NewSession toDomain(NewSessionApiRequest request) {
         return new NewSession(request.getLicensePlateNumber());
     }
 }

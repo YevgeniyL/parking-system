@@ -1,6 +1,6 @@
 package com.parkingsystem.domain.model.parking;
 
-import com.parkingsystem.domain.model.management.User;
+import com.parkingsystem.domain.model.management.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,7 +28,7 @@ public class SessionEntity {
 
     @ManyToOne
     @JoinColumn(name = "USER_ID", referencedColumnName = "ID")
-    private User user;
+    private UserEntity user;
 
     @Column(name = "ENDED_AT")
     private LocalDateTime createdAt;

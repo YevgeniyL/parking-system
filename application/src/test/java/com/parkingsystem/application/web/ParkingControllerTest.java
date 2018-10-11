@@ -1,7 +1,7 @@
 package com.parkingsystem.application.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.parkingsystem.application.controller.v1.ParkingControllerV1;
+import com.parkingsystem.application.controller.v1.ParkingController;
 import com.parkingsystem.domain.sevice.parking.ParkingService;
 import com.parkingsystem.infrastructure.api.v1.pakingasset.NewSessionApiRequest;
 import org.junit.jupiter.api.BeforeAll;
@@ -30,14 +30,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ParkingControllerTest {
 
     @Autowired
-    private ParkingControllerV1 parkingControllerV1;
+    private ParkingController parkingControllerV1;
     private MockMvc mockMvc;
 
     @BeforeAll
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(parkingControllerV1).build();
     }
-
 
     @Test
     @DisplayName("Test Parking controller v1")
@@ -48,7 +47,7 @@ public class ParkingControllerTest {
                 MockMvcRequestBuilders.post("/pms/v1/assets/1/sessions")
                         .content(body)
                         .contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(status().isCreated())
+                .andExpect(status().isOk())
                 .andDo(print());
     }
 }

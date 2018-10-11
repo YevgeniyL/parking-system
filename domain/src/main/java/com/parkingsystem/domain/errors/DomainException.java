@@ -1,15 +1,11 @@
 package com.parkingsystem.domain.errors;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public class DomainException extends RuntimeException {
-
-    private int code;
+    private String code;
     private String message;
-
-    public DomainException(ErrorMessages error) {
-        this.code = error.getCode();
-        this.message = error.getMessage();
-    }
 }

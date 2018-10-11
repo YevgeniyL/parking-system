@@ -1,7 +1,7 @@
 package com.parkingsystem.application.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.parkingsystem.application.controller.v1.ManagementControllerV1;
+import com.parkingsystem.application.controller.v1.ManagementController;
 import com.parkingsystem.domain.sevice.management.ManagementService;
 import com.parkingsystem.infrastructure.api.v1.management.NewParkingLotApiRequest;
 import org.junit.jupiter.api.BeforeAll;
@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ManagementControllerTest {
 
     @Autowired
-    private ManagementControllerV1 managementV1Controller;
+    private ManagementController managementV1Controller;
     private MockMvc mockMvc;
 
     @BeforeAll
@@ -49,7 +49,7 @@ public class ManagementControllerTest {
                 MockMvcRequestBuilders.post("/pms/v1/management/parkinglots")
                         .content(body)
                         .contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(status().isCreated())
+                .andExpect(status().isOk())
                 .andDo(print());
     }
 }

@@ -2,6 +2,7 @@ package com.parkingsystem.application.microservice;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.parkingsystem.domain.errors.ManagementError;
 import com.parkingsystem.infrastructure.api.v1.management.NewParkingLotApiRequest;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -44,11 +45,9 @@ public class ManagementMicroserviceTest {
                 MockMvcRequestBuilders.post("/pms/v1/management/parkinglots")
                         .content(body)
                         .contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(status().isUnprocessableEntity())
+                .andExpect(status().isPartialContent())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                .andExpect(jsonPath("error.status").value(422))
-                .andExpect(jsonPath("error.errorCode").value(1001))
-                .andExpect(jsonPath("error.message").value("Field 'address' is empty"));
+                .andExpect(jsonPath("description").value(ManagementError.IS_EMPTY_ADDRESS_2001.getDescription()));
     }
 
     @Test
@@ -59,11 +58,9 @@ public class ManagementMicroserviceTest {
                 MockMvcRequestBuilders.post("/pms/v1/management/parkinglots")
                         .content(body)
                         .contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(status().isUnprocessableEntity())
+                .andExpect(status().isPartialContent())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                .andExpect(jsonPath("error.status").value(422))
-                .andExpect(jsonPath("error.errorCode").value(1002))
-                .andExpect(jsonPath("error.message").value("Field 'isEnable' is empty"));
+                .andExpect(jsonPath("description").value(ManagementError.IS_EMPTY_ENABLED_2002.getDescription()));
     }
 
     @Test
@@ -76,6 +73,6 @@ public class ManagementMicroserviceTest {
                 MockMvcRequestBuilders.post("/pms/v1/management/parkinglots")
                         .content(body)
                         .contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(status().isCreated());
+                .andExpect(status().isOk());
     }
 }
