@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -26,10 +27,19 @@ public class UserEntity {
     @Column(name = "PASSWORD", nullable = false)
     private String password;
 
+    @Column(name = "BALANCE")
+    private BigDecimal balance;
+
     @Column(name = "LICENSE_PLATE_NUMBER", unique = true)
     private String licensePlateNumber;
 
     @Column(name = "CREATED", nullable = false, updatable = false)
     @CreationTimestamp
     private LocalDateTime created;
+
+    public UserEntity(String email, String password, String licensePlateNumber) {
+        this.email = email;
+        this.password = password;
+        this.licensePlateNumber = licensePlateNumber;
+    }
 }

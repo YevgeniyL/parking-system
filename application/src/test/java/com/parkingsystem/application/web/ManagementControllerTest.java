@@ -1,13 +1,10 @@
 package com.parkingsystem.application.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.parkingsystem.application.controller.v1.ManagementController;
 import com.parkingsystem.domain.sevice.management.ManagementService;
 import com.parkingsystem.infrastructure.api.v1.management.NewParkingLotApiRequest;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,7 +14,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -26,18 +22,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @SpringBootTest
 @MockBean(ManagementService.class)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ManagementControllerTest {
 
     @Autowired
-    private ManagementController managementV1Controller;
     private MockMvc mockMvc;
-
-    @BeforeAll
-    void setup() {
-        this.mockMvc = MockMvcBuilders.standaloneSetup(managementV1Controller).build();
-    }
-
 
     @Test
     @DisplayName("Test management controller v1")

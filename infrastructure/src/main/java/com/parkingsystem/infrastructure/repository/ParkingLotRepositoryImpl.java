@@ -23,4 +23,10 @@ public class ParkingLotRepositoryImpl implements ParkingLotRepository {
         simpleRepository.save(parkingLotEntity);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public ParkingLotEntity findBy(String parkingAddress) {
+        return simpleRepository.findFirstByAddress(parkingAddress);
+    }
+
 }

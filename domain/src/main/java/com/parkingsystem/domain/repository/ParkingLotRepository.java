@@ -7,4 +7,5 @@ public interface ParkingLotRepository {
 
     void save(ParkingLotEntity parkingLotEntity);
 
+    ParkingLotEntity findBy(String parkingAddress);
 }

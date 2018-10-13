@@ -32,6 +32,9 @@ public class ParkingController {
         } catch (DomainException e) {
             log.error("Domain exception", e);
             throw new DomainToHttpExceptionsConverter(e);
+        } catch (Exception e){
+            log.error("System exception", e);
+            throw new DomainToHttpExceptionsConverter(e);
         }
     }
 

@@ -30,7 +30,8 @@ public class ManagementController {
         try {
             managementService.save(ApiVersion.V1, transformer.toDomain(request));
         } catch (DomainException e) {
-            log.error("Domain exception", e);
+            throw new DomainToHttpExceptionsConverter(e);
+        } catch (Exception e) {
             throw new DomainToHttpExceptionsConverter(e);
         }
     }

@@ -11,6 +11,4 @@ import org.junit.runner.RunWith;
 @SelectPackages("com.parkingsystem")
 public class SpringTestCase {
 
-    //TODO For Management add microservice test with errors and business logic
-
 }

@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class ManagementTransformerTest {
 
     @Test
-    void newParkingLotToDomain(){
+    void newParkingLotToDomain() {
         String address = "Address";
         boolean isEnabled = true;
         NewParkingLot parkingLot = ManagementTransformer.toDomain(new NewParkingLotApiRequest(address, isEnabled));

@@ -12,7 +12,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "SESSION")
+@Table(name = "SESSION", indexes = {
+        @Index(columnList = "LICENSE_PLATE_NUMBER", name = "LICENSE_PLATE_NUMBER_IDX")
+})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -31,15 +33,25 @@ public class SessionEntity {
     private UserEntity user;
 
     @Column(name = "ENDED_AT")
-    private LocalDateTime createdAt;
+    private LocalDateTime endedAt;
 
     @Column(name = "UPDATE_INTERVAL", nullable = false, updatable = false)
     private Integer updateInterval;
 
-    @Column(name = "RATE", nullable = false, updatable = false)
-    private BigDecimal rate;
+    @Column(name = "TARIFF", nullable = false, updatable = false)
+    private BigDecimal tariff;
+
+    @Column(name = "USER_BALLANCE", nullable = false, updatable = false)
+    private BigDecimal userBalance;
 
     @Column(name = "LICENSE_PLATE_NUMBER", nullable = false, updatable = false)
     private String licensePlateNumber;
 
+    public SessionEntity(UserEntity user, Integer updateInterval, BigDecimal tariff, BigDecimal userBalance, String licensePlateNumber) {
+        this.user = user;
+        this.updateInterval = updateInterval;
+        this.tariff = tariff;
+        this.userBalance = userBalance;
+        this.licensePlateNumber = licensePlateNumber;
+    }
 }

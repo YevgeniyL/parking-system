@@ -10,10 +10,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class ParkingTransformerTest {
 
     @Test
-    void newSessionToDomain(){
+    void newSessionToDomain() {
         String licensePlateNumber = "123xxxx";
-        ParkingTransformer parkingTransformer = new ParkingTransformer();
-        NewSession newSession = parkingTransformer.toDomain(new NewSessionApiRequest(licensePlateNumber));
-        assertEquals(licensePlateNumber,newSession.getLicensePlateNumber());
+        NewSession newSession = ParkingTransformer.toDomain(new NewSessionApiRequest(licensePlateNumber));
+        assertEquals(licensePlateNumber, newSession.getLicensePlateNumber());
     }
 }

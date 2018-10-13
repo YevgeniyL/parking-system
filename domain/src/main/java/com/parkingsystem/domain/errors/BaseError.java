@@ -13,8 +13,8 @@ import lombok.Getter;
 public enum  BaseError {
     INTERNAL_SERV_ERROR("Internal_server", "Internal server error");
     private String code;
-    private String message;
+    private String description;
     public void doThrow() {
-        throw new DomainException(this.code,this.message) ;
+        throw new DomainException(this.code,this.description) ;
     }
 }

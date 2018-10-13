@@ -20,7 +20,7 @@ public class ParkingLotEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "ADDRESS", nullable = false, updatable = true)
+    @Column(name = "ADDRESS", nullable = false, updatable = true, unique = true)
     private String address;
 
     @Column(name = "IS_ENABLED", nullable = false, updatable = true)

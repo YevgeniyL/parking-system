@@ -4,4 +4,6 @@ import com.parkingsystem.domain.model.management.UserEntity;
 
 public interface UserRepository {
     UserEntity find(String licensePlateNumber);
+
+    void save(UserEntity userEntity);
 }
