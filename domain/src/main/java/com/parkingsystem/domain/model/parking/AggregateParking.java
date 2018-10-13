@@ -12,8 +12,12 @@ import com.parkingsystem.domain.sevice.ApiVersion;
 import com.parkingsystem.domain.sevice.parking.ParkingService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+
+import java.math.BigDecimal;
+import java.text.MessageFormat;
 
 @Service
 @Slf4j
@@ -25,31 +29,49 @@ public class AggregateParking implements ParkingService {
     @Autowired
     private ParkingLotRepository parkingLotRepository;
 
+    @Value("${price.minimalAmount}")
+    private BigDecimal minimalAmount;
+
+    @Value("${price.minimalAmountForCredit}")
+    private BigDecimal minimalAmountForCredit;
+
+    @Value("${price.tariff}")
+    private BigDecimal tariff;
+
+    @Value("${price.roundInterval}")
+    private int roundInterval;
+
     @Override
     public void createSession(ApiVersion apiVersion, NewSession newSession, String parkingAddress) {
         try {
             if (StringUtils.isEmpty(newSession.getLicensePlateNumber()))
                 ParkingError.IS_EMPTY_LICENSE_NUMBER_1001.doThrow();
 
-            ParkingLotEntity parkingLot = parkingLotRepository.findBy(parkingAddress);
+            final ParkingLotEntity parkingLot = parkingLotRepository.findBy(parkingAddress);
             if (parkingLot == null)
                 ParkingError.PARKING_ADDRESS_IS_NOT_EXIST_1002.doThrow();
 
-            UserEntity user = userRepository.find(newSession.getLicensePlateNumber());
+            final UserEntity user = userRepository.find(newSession.getLicensePlateNumber());
             if (user == null)
                 ParkingError.LICENSE_NUMBER_NOT_EXIST_1003.doThrow();
 
-            SessionEntity existSession = sessionRepository.findLastWhereEndedIsNullBy(newSession.getLicensePlateNumber());
-            if (existSession != null) {
-                log.error("System contain not ended parking session for user %s for licensePlateNumber %s", user.getEmail(), newSession.getLicensePlateNumber());
+            final SessionEntity openSession = sessionRepository.findLastWhereEndedIsNullBy(newSession.getLicensePlateNumber());
+            if (openSession != null) {
+                log.error(MessageFormat.format("System contain not ended parking session for user %s for licensePlateNumber %s", user.getEmail(), newSession.getLicensePlateNumber()));
                 ParkingError.LICENSE_NUMBER_HAVE_OPEN_SESSION_1004.doThrow();
             }
+
+            final BigDecimal userBalance = user.getBalance();
+            if (userBalance.compareTo(minimalAmount) <= 0) {
+                if (sessionRepository.findAnyOneByUser(user) == null)
+                    ParkingError.USER_BALANCE_TOO_LOW_FOR_OPEN_SESSION_1005.doThrow();
+
+                if (userBalance.compareTo(minimalAmountForCredit) <= 0)
+                    ParkingError.CREDIT_LIMIT_TO_BIG_FOR_OPEN_SESSION_1006.doThrow();
+            }
+
             if (ApiVersion.V2.equals(apiVersion)) log.info("execute some api v2 logic");
-
-//TODO save session and get values from application.properties
-//            SessionEntity session = new SessionEntity(user, updateInterval, tariff, user.getBalance(), licensePlateNumber);
-//            sessionRepository.save(session);
-
+            sessionRepository.save(new SessionEntity(user, roundInterval, tariff, userBalance, minimalAmount, minimalAmountForCredit, newSession.getLicensePlateNumber()));
         } catch (DomainException e) {
             throw e;
         } catch (Exception e) {

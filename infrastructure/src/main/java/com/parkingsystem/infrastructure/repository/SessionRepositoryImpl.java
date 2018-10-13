@@ -1,5 +1,6 @@
 package com.parkingsystem.infrastructure.repository;
 
+import com.parkingsystem.domain.model.management.UserEntity;
 import com.parkingsystem.domain.model.parking.SessionEntity;
 import com.parkingsystem.domain.repository.SessionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,5 +22,11 @@ public class SessionRepositoryImpl implements SessionRepository {
     @Transactional
     public void save(SessionEntity sessionEntity) {
         simpleRepository.save(sessionEntity);
+    }
+
+    @Override
+    public SessionEntity findAnyOneByUser(UserEntity user) {
+        return simpleRepository.findFirstByUser(user);
+
     }
 }

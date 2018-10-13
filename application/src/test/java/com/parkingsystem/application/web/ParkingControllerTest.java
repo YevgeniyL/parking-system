@@ -1,6 +1,7 @@
 package com.parkingsystem.application.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.parkingsystem.domain.sevice.management.ManagementService;
 import com.parkingsystem.domain.sevice.parking.ParkingService;
 import com.parkingsystem.infrastructure.api.v1.pakingasset.NewSessionApiRequest;
 import org.junit.jupiter.api.DisplayName;
@@ -22,6 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @SpringBootTest
 @MockBean(ParkingService.class)
+@MockBean(ManagementService.class) //added foe cache spring configuration
 public class ParkingControllerTest {
     @Autowired
     private MockMvc mockMvc;

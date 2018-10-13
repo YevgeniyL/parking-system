@@ -35,8 +35,8 @@ public class SessionEntity {
     @Column(name = "ENDED_AT")
     private LocalDateTime endedAt;
 
-    @Column(name = "UPDATE_INTERVAL", nullable = false, updatable = false)
-    private Integer updateInterval;
+    @Column(name = "ROUND_INTERVAL", nullable = false, updatable = false)
+    private Integer roundInterval;
 
     @Column(name = "TARIFF", nullable = false, updatable = false)
     private BigDecimal tariff;
@@ -44,14 +44,22 @@ public class SessionEntity {
     @Column(name = "USER_BALLANCE", nullable = false, updatable = false)
     private BigDecimal userBalance;
 
+    @Column(name = "MINIMAL_AMOUNT", nullable = false, updatable = false)
+    private BigDecimal minimalAmount;
+
+    @Column(name = "MINIMAL_CREDIT_AMOUNT", nullable = false, updatable = false)
+    private BigDecimal minimalCreditAmount;
+
     @Column(name = "LICENSE_PLATE_NUMBER", nullable = false, updatable = false)
     private String licensePlateNumber;
 
-    public SessionEntity(UserEntity user, Integer updateInterval, BigDecimal tariff, BigDecimal userBalance, String licensePlateNumber) {
+    public SessionEntity(UserEntity user, Integer roundInterval, BigDecimal tariff, BigDecimal userBalance, BigDecimal minimalAmount, BigDecimal minimalAmountForCredit, String licensePlateNumber) {
         this.user = user;
-        this.updateInterval = updateInterval;
+        this.roundInterval = roundInterval;
         this.tariff = tariff;
         this.userBalance = userBalance;
+        this.minimalAmount = minimalAmount;
+        this.minimalCreditAmount = minimalAmountForCredit;
         this.licensePlateNumber = licensePlateNumber;
     }
 }

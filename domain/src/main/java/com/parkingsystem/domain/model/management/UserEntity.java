@@ -28,7 +28,7 @@ public class UserEntity {
     private String password;
 
     @Column(name = "BALANCE")
-    private BigDecimal balance;
+    private BigDecimal balance = BigDecimal.valueOf(0);
 
     @Column(name = "LICENSE_PLATE_NUMBER", unique = true)
     private String licensePlateNumber;

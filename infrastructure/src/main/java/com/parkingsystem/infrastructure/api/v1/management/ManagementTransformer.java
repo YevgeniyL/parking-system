@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ManagementTransformer {
 
-    public static NewParkingLot toDomain(NewParkingLotApiRequest request) {
+    public NewParkingLot toDomain(NewParkingLotApiRequest request) {
         return new NewParkingLot(request.getAddress(), request.getIsEnabled()
         );
     }
