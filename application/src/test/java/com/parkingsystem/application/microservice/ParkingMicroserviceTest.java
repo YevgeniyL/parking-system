@@ -34,21 +34,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @SpringBootTest
 public class ParkingMicroserviceTest {
-    @Autowired
-    private MockMvc mockMvc;
-    @Autowired
-    private ParkingLotRepository parkingLotRepository;
-    @Autowired
-    private SessionRepository sessionRepository;
-    @Autowired
-    private UserRepository userRepository;
-
     private final String endpointUrl = "/pms/v1/assets/";
     private final String parkingLotAddress = "testUrl";
     private final String notExistParkingLotAddress = "testUrlNotExist";
     private final String licenseNumber = "123XYZ";
     private final String fakeLicenseNumber = "fakeXYZ";
-
     private final Integer updateInterval = 15;
     private final BigDecimal tariff = BigDecimal.valueOf(3.00);
     private final BigDecimal minimalAmount = BigDecimal.valueOf(30);
@@ -60,6 +50,36 @@ public class ParkingMicroserviceTest {
     private final BigDecimal userBalance0 = BigDecimal.valueOf(0);
     private final BigDecimal userBalance20 = BigDecimal.valueOf(20);
     private final BigDecimal userBalance30 = BigDecimal.valueOf(30);
+    @Autowired
+    private MockMvc mockMvc;
+    @Autowired
+    private ParkingLotRepository parkingLotRepository;
+    @Autowired
+    private SessionRepository sessionRepository;
+    @Autowired
+    private UserRepository userRepository;
+
+    private UserEntity createNewUser(BigDecimal userBalance) {
+        UserEntity user = new UserEntity(email, testPassword, licenseNumber, firstName, lastName);
+        user.setBalance(userBalance);
+        userRepository.save(user);
+        return user;
+    }
+
+    private void saveNewParkingLot(String parkingLotAddress, boolean isEnabled) {
+        parkingLotRepository.save(new ParkingLotEntity(parkingLotAddress, isEnabled));
+    }
+
+    private void saveNewSession(UserEntity user, Integer updateInterval, BigDecimal tariff, BigDecimal minimalAmount, BigDecimal minimalAmountForCredit, String licensePlateNumber) {
+        SessionEntity session = new SessionEntity(user, updateInterval, tariff, user.getBalance(), minimalAmount, minimalAmountForCredit, licensePlateNumber);
+        sessionRepository.save(session);
+    }
+
+    private void saveNewEndedSession(UserEntity user, Integer updateInterval, BigDecimal tariff, BigDecimal minimalAmount, BigDecimal minimalAmountForCredit, String licensePlateNumber) {
+        SessionEntity session = new SessionEntity(user, updateInterval, tariff, user.getBalance(), minimalAmount, minimalAmountForCredit, licensePlateNumber);
+        session.setEndedAt(LocalDateTime.now());
+        sessionRepository.save(session);
+    }
 
     @ExtendWith(SpringExtension.class)
     @ActiveProfiles("test")
@@ -317,27 +337,5 @@ public class ParkingMicroserviceTest {
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
                     .andExpect(status().isOk());
         }
-    }
-
-    private UserEntity createNewUser(BigDecimal userBalance) {
-        UserEntity user = new UserEntity(email, testPassword, licenseNumber, firstName, lastName);
-        user.setBalance(userBalance);
-        userRepository.save(user);
-        return user;
-    }
-
-    private void saveNewParkingLot(String parkingLotAddress, boolean isEnabled) {
-        parkingLotRepository.save(new ParkingLotEntity(parkingLotAddress, isEnabled));
-    }
-
-    private void saveNewSession(UserEntity user, Integer updateInterval, BigDecimal tariff, BigDecimal minimalAmount, BigDecimal minimalAmountForCredit, String licensePlateNumber) {
-        SessionEntity session = new SessionEntity(user, updateInterval, tariff, user.getBalance(), minimalAmount, minimalAmountForCredit, licensePlateNumber);
-        sessionRepository.save(session);
-    }
-
-    private void saveNewEndedSession(UserEntity user, Integer updateInterval, BigDecimal tariff, BigDecimal minimalAmount, BigDecimal minimalAmountForCredit, String licensePlateNumber) {
-        SessionEntity session = new SessionEntity(user, updateInterval, tariff, user.getBalance(), minimalAmount, minimalAmountForCredit, licensePlateNumber);
-        session.setEndedAt(LocalDateTime.now());
-        sessionRepository.save(session);
     }
 }

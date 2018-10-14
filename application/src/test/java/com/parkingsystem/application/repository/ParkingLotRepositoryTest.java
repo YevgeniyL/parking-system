@@ -22,9 +22,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class ParkingLotRepositoryTest {
 
     @Autowired
-    private ParkingLotRepository parkingLotRepository;
-    @Autowired
     EntityManager entityManager;
+    @Autowired
+    private ParkingLotRepository parkingLotRepository;
 
     @Test
     @Rollback

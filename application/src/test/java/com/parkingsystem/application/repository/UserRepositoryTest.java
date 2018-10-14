@@ -21,18 +21,16 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @ActiveProfiles("test")
 public class UserRepositoryTest {
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    EntityManager entityManager;
-
     private final String email = "test@email.com";
     private final String testPassword = "testPassword";
     private final String firstName = "TestFirstName";
     private final String lastName = "TestLastName";
     private final String licensePlateNumber = "123XYZ";
     private final BigDecimal userBalance = BigDecimal.valueOf(15);
-
+    @Autowired
+    EntityManager entityManager;
+    @Autowired
+    private UserRepository userRepository;
 
     @Test
     @Rollback

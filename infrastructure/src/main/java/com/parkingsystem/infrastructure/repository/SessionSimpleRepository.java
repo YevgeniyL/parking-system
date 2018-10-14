@@ -10,5 +10,5 @@ public interface SessionSimpleRepository extends JpaRepository<SessionEntity, Lo
 
     SessionEntity findFirstByUser(UserEntity user);
 
-    SessionEntity findFirstByLicensePlateNumberAndStartedAtIsNotNullAndEndedAtIsNull (String licensePlateNumber);
+    SessionEntity findFirstByLicensePlateNumberAndStartedAtIsNotNullAndEndedAtIsNull(String licensePlateNumber);
 }

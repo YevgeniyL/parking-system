@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ApplicationVariableConfigurationChecker implements ApplicationContextInitializer {
+public class SpringPropertiesScanner implements ApplicationContextInitializer {
     private final List<String> systemProps = Arrays.asList(
             "price.tariff",
             "price.roundInterval",

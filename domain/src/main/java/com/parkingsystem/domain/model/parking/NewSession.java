@@ -8,5 +8,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class NewSession {
-    private  String licensePlateNumber;
+    private String licensePlateNumber;
 }

@@ -8,5 +8,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class NewSessionApiRequest {
-    private  String licensePlateNumber;
+    private String licensePlateNumber;
 }

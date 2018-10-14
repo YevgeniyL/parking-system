@@ -1,6 +1,5 @@
 package com.parkingsystem.domain.model.email;
 
-import com.parkingsystem.domain.model.management.UserEntity;
 import com.parkingsystem.domain.model.parking.SessionEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

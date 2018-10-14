@@ -42,7 +42,7 @@ public class EmailServiceImpl implements EmailService {
                 emailMessageEntity.setSended(LocalDateTime.now());
                 emailRepository.save(emailMessageEntity);
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             log.error("Unsended messages not sended", e);
         }
     }

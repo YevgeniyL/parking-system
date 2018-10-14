@@ -1,4 +1,5 @@
-<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
     <changeSet author="Evgeniy" id="2018_10_14-Init_database-1">
         <createTable tableName="EMAIL_MESSAGE">
             <column autoIncrement="true" name="ID" type="BIGINT">
@@ -109,9 +110,11 @@
         </createIndex>
     </changeSet>
     <changeSet author="Evgeniy" id="2018_10_14-Init_database-11">
-        <addForeignKeyConstraint baseColumnNames="SESSION_ID" baseTableName="EMAIL_MESSAGE" constraintName="EMAIL_MESSAGE_SESSION_ID_FK" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="SESSION"/>
+        <addForeignKeyConstraint baseColumnNames="SESSION_ID" baseTableName="EMAIL_MESSAGE" constraintName="EMAIL_MESSAGE_SESSION_ID_FK" onDelete="RESTRICT"
+                                 onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="SESSION"/>
     </changeSet>
     <changeSet author="Evgeniy" id="2018_10_14-Init_database-12">
-        <addForeignKeyConstraint baseColumnNames="USER_ID" baseTableName="SESSION" constraintName="SESSION_USER_ID_FK" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="USER"/>
+        <addForeignKeyConstraint baseColumnNames="USER_ID" baseTableName="SESSION" constraintName="SESSION_USER_ID_FK" onDelete="RESTRICT" onUpdate="RESTRICT"
+                                 referencedColumnNames="ID" referencedTableName="USER"/>
     </changeSet>
 </databaseChangeLog>

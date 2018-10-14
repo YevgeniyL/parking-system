@@ -24,13 +24,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @ActiveProfiles("test")
 public class SessionRepositoryTest {
-    @Autowired
-    private SessionRepository sessionRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    EntityManager entityManager;
-
     private final Integer updateInterval = 15;
     private final BigDecimal tariff = BigDecimal.valueOf(3.00);
     private final BigDecimal minimalAmount = BigDecimal.valueOf(15.00);
@@ -42,6 +35,12 @@ public class SessionRepositoryTest {
     private final String licensePlateNumber = "123XYZ";
     private final String fakeLicensePlateNumber = "fake123XYZ";
     private final BigDecimal userBalance = BigDecimal.valueOf(15);
+    @Autowired
+    EntityManager entityManager;
+    @Autowired
+    private SessionRepository sessionRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @Test
     @Rollback

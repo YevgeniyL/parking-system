@@ -48,9 +48,9 @@ public class ParkingTransformerTest {
         LocalDateTime startAt = LocalDateTime.now().minusHours(2);
         LocalDateTime endAt = LocalDateTime.now();
         CloseSessionResponseApi responseApi = parkingTransformer.toRest(new CloseSessionResponse(status, total, startAt, endAt));
-        assertEquals(status , responseApi.getStatus());
-        assertEquals(total , responseApi.getTotal());
-        assertEquals(startAt , responseApi.getStartedAt());
-        assertEquals(endAt , responseApi.getStoppedAt());
+        assertEquals(status, responseApi.getStatus());
+        assertEquals(total, responseApi.getTotal());
+        assertEquals(startAt, responseApi.getStartedAt());
+        assertEquals(endAt, responseApi.getStoppedAt());
     }
 }

@@ -2,8 +2,8 @@ package com.parkingsystem.application.unit;
 
 
 import com.parkingsystem.domain.sevice.PriceEngine;
-import org.junit.jupiter.api.Test;
 import components.SimplePriceEngine;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

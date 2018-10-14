@@ -120,7 +120,7 @@ public class AggregateParking implements ParkingService {
     private void sendEmail(EmailMessage emailMessage) {
         try {
             emailService.sendMessage(emailMessage);
-        } catch (Exception e){
+        } catch (Exception e) {
             log.error("Error on sending email after close parking session");
         }
     }

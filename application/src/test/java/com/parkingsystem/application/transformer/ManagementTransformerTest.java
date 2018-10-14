@@ -25,7 +25,7 @@ public class ManagementTransformerTest {
         String address = "Address";
         boolean isEnabled = true;
         NewParkingLot parkingLot = managementTransformer.toDomain(new NewParkingLotApiRequest(address, isEnabled));
-        assertEquals(address,parkingLot.getAddress());
-        assertEquals(isEnabled,parkingLot.getIsEnabled());
+        assertEquals(address, parkingLot.getAddress());
+        assertEquals(isEnabled, parkingLot.getIsEnabled());
     }
 }
