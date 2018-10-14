@@ -1,0 +1,117 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+    <changeSet author="Evgeniy" id="2018_10_14-Init_database-1">
+        <createTable tableName="EMAIL_MESSAGE">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="EMAIL_MESSAGE_PK"/>
+            </column>
+            <column name="CREATED" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SEND_TO" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SENDED" type="TIMESTAMP"/>
+            <column name="SUBJECT" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TEXT" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SESSION_ID" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Evgeniy" id="2018_10_14-Init_database-2">
+        <createTable tableName="PARKING_LOT">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="PARKING_LOT_PK"/>
+            </column>
+            <column name="ADDRESS" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="PARKING_LOT_UNIQUE_CONSTRAINT_ADDRESS"/>
+            </column>
+            <column name="CREATED" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="IS_ENABLED" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Evgeniy" id="2018_10_14-Init_database-3">
+        <createTable tableName="SESSION">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="SESSION_PK"/>
+            </column>
+            <column name="ENDED_AT" type="TIMESTAMP"/>
+            <column name="LICENSE_PLATE_NUMBER" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MINIMAL_AMOUNT" type="DECIMAL(19, 2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MINIMAL_CREDIT_AMOUNT" type="DECIMAL(19, 2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ROUND_INTERVAL" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="STARTED_AT" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TARIFF" type="DECIMAL(19, 2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TOTAL_COST" type="DECIMAL(19, 2)"/>
+            <column name="USER_BALANCE" type="DECIMAL(19, 2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USER_ID" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Evgeniy" id="2018_10_14-Init_database-4">
+        <createTable tableName="USER">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="USER_PK"/>
+            </column>
+            <column name="BALANCE" type="DECIMAL(19, 2)"/>
+            <column name="CREATED" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EMAIL" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="USER_UNIQUE_CONSTRAINT_EMAIL"/>
+            </column>
+            <column name="FIRST_NAME" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LAST_NAME" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LICENSE_PLATE_NUMBER" type="VARCHAR(255)">
+                <constraints unique="true" uniqueConstraintName="USER_UNIQUE_CONSTRAINT_LICENSE_PLATE_NUMBER"/>
+            </column>
+            <column name="PASSWORD" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Evgeniy" id="2018_10_14-Init_database-8">
+        <createIndex indexName="EMAIL_MESSAGE_SESSION_ID_FK_INDEX" tableName="EMAIL_MESSAGE">
+            <column name="SESSION_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Evgeniy" id="2018_10_14-Init_database-9">
+        <createIndex indexName="SESSION_INDEX_USER_ID" tableName="SESSION">
+            <column name="USER_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Evgeniy" id="2018_10_14-Init_database-10">
+        <createIndex indexName="LICENSE_PLATE_NUMBER_IDX" tableName="SESSION">
+            <column name="LICENSE_PLATE_NUMBER"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Evgeniy" id="2018_10_14-Init_database-11">
+        <addForeignKeyConstraint baseColumnNames="SESSION_ID" baseTableName="EMAIL_MESSAGE" constraintName="EMAIL_MESSAGE_SESSION_ID_FK" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="SESSION"/>
+    </changeSet>
+    <changeSet author="Evgeniy" id="2018_10_14-Init_database-12">
+        <addForeignKeyConstraint baseColumnNames="USER_ID" baseTableName="SESSION" constraintName="SESSION_USER_ID_FK" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="USER"/>
+    </changeSet>
+</databaseChangeLog>
