@@ -35,6 +35,7 @@ public class EmailServiceImpl implements EmailService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void sendAllNotSendedMessage() {
         try {
+            log.info("Start send all not sended email messages");
             List<EmailMessageEntity> unsendedMessages = emailRepository.findBySendedIsNull();
             for (EmailMessageEntity emailMessageEntity : unsendedMessages) {
                 sendEmail(emailMessageEntity);

@@ -14,8 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
@@ -115,13 +113,16 @@ public class AggregateParking implements ParkingService {
         session.setTotalCost(totalCost);
         sessionRepository.save(session);
 
-        new Thread(() -> sendEmail(new EmailMessage(buildCloseSessionText(session), user.getEmail(), "Invoice from test parking system", session.getId())));
+        new Thread(() -> sendEmail(new EmailMessage(buildCloseSessionText(session), user.getEmail(), "Invoice from test parking system", session.getId()))).run();
         return new CloseSessionResponse("stopped", totalCost, session.getStartedAt(), now);
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void sendEmail(EmailMessage emailMessage) {
-        emailService.sendMessage(emailMessage);
+    private void sendEmail(EmailMessage emailMessage) {
+        try {
+            emailService.sendMessage(emailMessage);
+        } catch (Exception e){
+            log.error("Error on sending email after close parking session");
+        }
     }
 
     private String buildCloseSessionText(SessionEntity session) {
