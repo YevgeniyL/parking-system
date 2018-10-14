@@ -6,7 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface SessionSimpleRepository extends JpaRepository<SessionEntity, Long> {
 
-    SessionEntity findFirstByLicensePlateNumberAndEndedAtIsNullOrderByIdDesc(String licensePlateNumber);
+    SessionEntity findFirstByLicensePlateNumberAndEndedAtIsNull(String licensePlateNumber);
 
     SessionEntity findFirstByUser(UserEntity user);
+
+    SessionEntity findFirstByLicensePlateNumberAndStartedAtIsNotNullAndEndedAtIsNull (String licensePlateNumber);
 }

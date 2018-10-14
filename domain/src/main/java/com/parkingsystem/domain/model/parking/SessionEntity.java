@@ -53,6 +53,9 @@ public class SessionEntity {
     @Column(name = "LICENSE_PLATE_NUMBER", nullable = false, updatable = false)
     private String licensePlateNumber;
 
+    @Column(name = "TOTAL_COST")
+    private BigDecimal totalCost;
+
     public SessionEntity(UserEntity user, Integer roundInterval, BigDecimal tariff, BigDecimal userBalance, BigDecimal minimalAmount, BigDecimal minimalAmountForCredit, String licensePlateNumber) {
         this.user = user;
         this.roundInterval = roundInterval;

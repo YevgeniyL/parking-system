@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Repository
 public class SessionRepositoryImpl implements SessionRepository {
     @Autowired
@@ -14,8 +16,8 @@ public class SessionRepositoryImpl implements SessionRepository {
 
     @Override
     @Transactional(readOnly = true)
-    public SessionEntity findLastWhereEndedIsNullBy(String licensePlateNumber) {
-        return simpleRepository.findFirstByLicensePlateNumberAndEndedAtIsNullOrderByIdDesc(licensePlateNumber);
+    public SessionEntity findNotClosedBy(String licensePlateNumber) {
+        return simpleRepository.findFirstByLicensePlateNumberAndEndedAtIsNull(licensePlateNumber);
     }
 
     @Override
@@ -28,5 +30,15 @@ public class SessionRepositoryImpl implements SessionRepository {
     public SessionEntity findAnyOneByUser(UserEntity user) {
         return simpleRepository.findFirstByUser(user);
 
+    }
+
+    @Override
+    public SessionEntity findStartedAndNotClosedSessionBy(String licencePlateNumber) {
+        return simpleRepository.findFirstByLicensePlateNumberAndStartedAtIsNotNullAndEndedAtIsNull(licencePlateNumber);
+    }
+
+    @Override
+    public Optional<SessionEntity> find(Long sessionId) {
+        return simpleRepository.findById(sessionId);
     }
 }

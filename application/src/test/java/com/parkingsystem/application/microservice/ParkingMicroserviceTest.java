@@ -8,7 +8,10 @@ import com.parkingsystem.domain.model.parking.SessionEntity;
 import com.parkingsystem.domain.repository.ParkingLotRepository;
 import com.parkingsystem.domain.repository.SessionRepository;
 import com.parkingsystem.domain.repository.UserRepository;
+import com.parkingsystem.infrastructure.api.v1.pakingasset.CloseSessionApi;
 import com.parkingsystem.infrastructure.api.v1.pakingasset.NewSessionApiRequest;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +36,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ParkingMicroserviceTest {
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
     private ParkingLotRepository parkingLotRepository;
     @Autowired
@@ -41,9 +43,10 @@ public class ParkingMicroserviceTest {
     @Autowired
     private UserRepository userRepository;
 
+    private final String endpointUrl = "/pms/v1/assets/";
     private final String parkingLotAddress = "testUrl";
-    private final String notExistParkingLotAddress = "testUrl";
-    private final String walidLicenseNumber = "123XYZ";
+    private final String notExistParkingLotAddress = "testUrlNotExist";
+    private final String licenseNumber = "123XYZ";
     private final String fakeLicenseNumber = "fakeXYZ";
 
     private final Integer updateInterval = 15;
@@ -52,150 +55,279 @@ public class ParkingMicroserviceTest {
     private final BigDecimal minimalAmountForCredit = BigDecimal.valueOf(15);
     private final String email = "test@email.com";
     private final String testPassword = "testPassword";
+    private final String firstName = "TestFirstName";
+    private final String lastName = "TestLastName";
     private final BigDecimal userBalance0 = BigDecimal.valueOf(0);
     private final BigDecimal userBalance20 = BigDecimal.valueOf(20);
     private final BigDecimal userBalance30 = BigDecimal.valueOf(30);
 
-    @Test
-    void error_1001_test() throws Exception {
-        NewSessionApiRequest request = new NewSessionApiRequest("");
-        String body = (new ObjectMapper()).valueToTree(request).toString();
-        this.mockMvc.perform(
-                MockMvcRequestBuilders.post("/pms/v1/assets/" + parkingLotAddress + "/sessions")
-                        .content(body)
-                        .contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("description").value(ParkingError.IS_EMPTY_LICENSE_NUMBER_1001.getDescription()))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                .andExpect(status().isPartialContent());
+    @ExtendWith(SpringExtension.class)
+    @ActiveProfiles("test")
+    @SpringBootTest
+    @Nested
+    @DisplayName("Open session")
+    class OpenSessionTest {
+
+        @Test
+        void error_1001_test() throws Exception {
+            NewSessionApiRequest request = new NewSessionApiRequest("");
+            String body = (new ObjectMapper()).valueToTree(request).toString();
+            mockMvc.perform(
+                    MockMvcRequestBuilders.post(endpointUrl + "/" + parkingLotAddress + "/sessions")
+                            .content(body)
+                            .contentType(MediaType.APPLICATION_JSON_UTF8))
+                    .andDo(print())
+                    .andExpect(jsonPath("description").value(ParkingError.IS_EMPTY_LICENSE_NUMBER_1001.getDescription()))
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                    .andExpect(status().isPartialContent());
+        }
+
+        @Test
+        void error_1002_test() throws Exception {
+            NewSessionApiRequest request = new NewSessionApiRequest(fakeLicenseNumber);
+            String body = (new ObjectMapper()).valueToTree(request).toString();
+            mockMvc.perform(
+                    MockMvcRequestBuilders.post(endpointUrl + "/" + notExistParkingLotAddress + "/sessions")
+                            .content(body)
+                            .contentType(MediaType.APPLICATION_JSON_UTF8))
+                    .andDo(print())
+                    .andExpect(jsonPath("description").value(ParkingError.PARKING_ADDRESS_IS_NOT_EXIST_1002.getDescription()))
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                    .andExpect(status().isInternalServerError());
+        }
+
+        @Test
+        @Transactional
+        @Rollback
+        void error_1003_test() throws Exception {
+            saveNewParkingLot(parkingLotAddress, Boolean.TRUE);
+            NewSessionApiRequest request = new NewSessionApiRequest(fakeLicenseNumber);
+            String body = (new ObjectMapper()).valueToTree(request).toString();
+            mockMvc.perform(
+                    MockMvcRequestBuilders.post(endpointUrl + "/" + parkingLotAddress + "/sessions")
+                            .content(body)
+                            .contentType(MediaType.APPLICATION_JSON_UTF8))
+                    .andDo(print())
+                    .andExpect(jsonPath("description").value(ParkingError.LICENSE_NUMBER_NOT_EXIST_1003.getDescription()))
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                    .andExpect(status().isNoContent());
+        }
+
+        @Test
+        @Transactional
+        @Rollback
+        void error_1007_test() throws Exception {
+            saveNewParkingLot(parkingLotAddress, Boolean.FALSE);
+            NewSessionApiRequest request = new NewSessionApiRequest(licenseNumber);
+            String body = (new ObjectMapper()).valueToTree(request).toString();
+            mockMvc.perform(
+                    MockMvcRequestBuilders.post(endpointUrl + "/" + parkingLotAddress + "/sessions")
+                            .content(body)
+                            .contentType(MediaType.APPLICATION_JSON_UTF8))
+                    .andDo(print())
+                    .andExpect(jsonPath("description").value(ParkingError.PARKING_LOT_IS_NOT_WORKING_1007.getDescription()))
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                    .andExpect(status().isNoContent());
+        }
+
+        @Test
+        @Transactional
+        @Rollback
+        void error_1004_test() throws Exception {
+            saveNewParkingLot(parkingLotAddress, Boolean.TRUE);
+            UserEntity user = createNewUser(userBalance0);
+            saveNewSession(user, updateInterval, tariff, minimalAmount, minimalAmountForCredit, licenseNumber);
+
+            NewSessionApiRequest request = new NewSessionApiRequest(licenseNumber);
+            String body = (new ObjectMapper()).valueToTree(request).toString();
+            mockMvc.perform(
+                    MockMvcRequestBuilders.post(endpointUrl + "/" + parkingLotAddress + "/sessions")
+                            .content(body)
+                            .contentType(MediaType.APPLICATION_JSON_UTF8))
+                    .andDo(print())
+                    .andExpect(jsonPath("description").value(ParkingError.LICENSE_NUMBER_HAVE_OPEN_SESSION_1004.getDescription()))
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                    .andExpect(status().isInternalServerError());
+        }
+
+        @Test
+        @Transactional
+        @Rollback
+        void error_1005_test() throws Exception {
+            saveNewParkingLot(parkingLotAddress, Boolean.TRUE);
+            createNewUser(userBalance0);
+            NewSessionApiRequest request = new NewSessionApiRequest(licenseNumber);
+            String body = (new ObjectMapper()).valueToTree(request).toString();
+            mockMvc.perform(
+                    MockMvcRequestBuilders.post(endpointUrl + "/" + parkingLotAddress + "/sessions")
+                            .content(body)
+                            .contentType(MediaType.APPLICATION_JSON_UTF8))
+                    .andDo(print())
+                    .andExpect(jsonPath("description").value(ParkingError.USER_BALANCE_TOO_LOW_FOR_OPEN_SESSION_1005.getDescription()))
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                    .andExpect(status().isNoContent());
+        }
+
+        @Test
+        @Transactional
+        @Rollback
+        void error_1006_test() throws Exception {
+            saveNewParkingLot(parkingLotAddress, Boolean.TRUE);
+            UserEntity user = createNewUser(userBalance0);
+            saveNewEndedSession(user, updateInterval, tariff, minimalAmount, minimalAmountForCredit, licenseNumber);
+            NewSessionApiRequest request = new NewSessionApiRequest(licenseNumber);
+            String body = (new ObjectMapper()).valueToTree(request).toString();
+            mockMvc.perform(
+                    MockMvcRequestBuilders.post(endpointUrl + "/" + parkingLotAddress + "/sessions")
+                            .content(body)
+                            .contentType(MediaType.APPLICATION_JSON_UTF8))
+                    .andDo(print())
+                    .andExpect(jsonPath("description").value(ParkingError.CREDIT_LIMIT_TO_BIG_FOR_OPEN_SESSION_1006.getDescription()))
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                    .andExpect(status().isNoContent());
+        }
+
+
+        @Test
+        @Transactional
+        @Rollback
+        void validTestWithoutSessions() throws Exception {
+            saveNewParkingLot(parkingLotAddress, Boolean.TRUE);
+            createNewUser(userBalance30);
+            NewSessionApiRequest request = new NewSessionApiRequest(licenseNumber);
+            String body = (new ObjectMapper()).valueToTree(request).toString();
+            mockMvc.perform(
+                    MockMvcRequestBuilders.post(endpointUrl + "/" + parkingLotAddress + "/sessions")
+                            .content(body)
+                            .contentType(MediaType.APPLICATION_JSON_UTF8))
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andDo(print());
+        }
+
+        @Test
+        @Transactional
+        @Rollback
+        void validTest() throws Exception {
+            saveNewParkingLot(parkingLotAddress, Boolean.TRUE);
+            UserEntity user = createNewUser(userBalance20);
+            saveNewEndedSession(user, updateInterval, tariff, minimalAmount, minimalAmountForCredit, licenseNumber);
+            NewSessionApiRequest request = new NewSessionApiRequest(licenseNumber);
+            String body = (new ObjectMapper()).valueToTree(request).toString();
+            mockMvc.perform(
+                    MockMvcRequestBuilders.post(endpointUrl + "/" + parkingLotAddress + "/sessions")
+                            .content(body)
+                            .contentType(MediaType.APPLICATION_JSON_UTF8))
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andDo(print());
+        }
     }
 
-    @Test
-    void error_1002_test() throws Exception {
+    @ExtendWith(SpringExtension.class)
+    @ActiveProfiles("test")
+    @SpringBootTest
+    @Nested
+    @DisplayName("Close session")
+    class CloseSessionTest {
+        private final String statusClosedSession = "stopped";
+        private final String fakeStatusClosedSession = "RUN_FOREST";
 
-        NewSessionApiRequest request = new NewSessionApiRequest(fakeLicenseNumber);
-        String body = (new ObjectMapper()).valueToTree(request).toString();
-        this.mockMvc.perform(
-                MockMvcRequestBuilders.post("/pms/v1/assets/" + notExistParkingLotAddress + "/sessions")
-                        .content(body)
-                        .contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("description").value(ParkingError.PARKING_ADDRESS_IS_NOT_EXIST_1002.getDescription()))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                .andExpect(status().isInternalServerError());
-    }
+        @Test
+        void IS_EMPTY_STATUS_1051_TEST() throws Exception {
+            CloseSessionApi request = new CloseSessionApi();
+            String body = (new ObjectMapper()).valueToTree(request).toString();
+            mockMvc.perform(
+                    MockMvcRequestBuilders.post(endpointUrl + parkingLotAddress + "/vehicle/" + licenseNumber + "/session")
+                            .content(body)
+                            .contentType(MediaType.APPLICATION_JSON_UTF8))
+                    .andDo(print())
+                    .andExpect(jsonPath("description").value(ParkingError.IS_EMPTY_STATUS_1051.getDescription()))
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                    .andExpect(status().isInternalServerError());
+        }
 
-    @Test
-    @Transactional
-    @Rollback
-    void error_1003_test() throws Exception {
-        createParkingLot();
-        NewSessionApiRequest request = new NewSessionApiRequest(fakeLicenseNumber);
-        String body = (new ObjectMapper()).valueToTree(request).toString();
-        this.mockMvc.perform(
-                MockMvcRequestBuilders.post("/pms/v1/assets/" + parkingLotAddress + "/sessions")
-                        .content(body)
-                        .contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("description").value(ParkingError.LICENSE_NUMBER_NOT_EXIST_1003.getDescription()))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                .andExpect(status().isNoContent());
-    }
+        @Test
+        void IS_NOT_STOPPED_STATUS_1053_TEST() throws Exception {
+            CloseSessionApi request = new CloseSessionApi(fakeStatusClosedSession);
+            String body = (new ObjectMapper()).valueToTree(request).toString();
+            mockMvc.perform(
+                    MockMvcRequestBuilders.post(endpointUrl + parkingLotAddress + "/vehicle/" + licenseNumber + "/session")
+                            .content(body)
+                            .contentType(MediaType.APPLICATION_JSON_UTF8))
+                    .andDo(print())
+                    .andExpect(jsonPath("description").value(ParkingError.IS_NOT_STOPPED_STATUS_1053.getDescription()))
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                    .andExpect(status().isInternalServerError());
+        }
 
-    @Test
-    @Transactional
-    @Rollback
-    void error_1004_test() throws Exception {
-        createParkingLot();
-        UserEntity user = createNewUser(userBalance0);
-        saveNewSession(user, updateInterval, tariff, minimalAmount, minimalAmountForCredit, walidLicenseNumber);
+        @Test
+        @Transactional
+        @Rollback
+        void PARKING_ADDRESS_IS_NOT_EXIST_1054_TEST() throws Exception {
+            CloseSessionApi request = new CloseSessionApi(statusClosedSession);
+            String body = (new ObjectMapper()).valueToTree(request).toString();
+            mockMvc.perform(
+                    MockMvcRequestBuilders.post(endpointUrl + notExistParkingLotAddress + "/vehicle/" + licenseNumber + "/session")
+                            .content(body)
+                            .contentType(MediaType.APPLICATION_JSON_UTF8))
+                    .andDo(print())
+                    .andExpect(jsonPath("description").value(ParkingError.PARKING_ADDRESS_IS_NOT_EXIST_1054.getDescription()))
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                    .andExpect(status().isInternalServerError());
+        }
 
-        NewSessionApiRequest request = new NewSessionApiRequest(walidLicenseNumber);
-        String body = (new ObjectMapper()).valueToTree(request).toString();
-        this.mockMvc.perform(
-                MockMvcRequestBuilders.post("/pms/v1/assets/" + parkingLotAddress + "/sessions")
-                        .content(body)
-                        .contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("description").value(ParkingError.LICENSE_NUMBER_HAVE_OPEN_SESSION_1004.getDescription()))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                .andExpect(status().isInternalServerError());
-    }
+        @Test
+        @Transactional
+        @Rollback
+        void LICENSE_NUMBER_NO_HAVE_OPEN_SESSION_1055_TEST() throws Exception {
+            UserEntity user = createNewUser(userBalance0);
+            saveNewParkingLot(parkingLotAddress, Boolean.TRUE);
+            saveNewSession(user, updateInterval, tariff, minimalAmount, minimalAmountForCredit, licenseNumber);
+            CloseSessionApi request = new CloseSessionApi(statusClosedSession);
+            String body = (new ObjectMapper()).valueToTree(request).toString();
+            mockMvc.perform(
+                    MockMvcRequestBuilders.post(endpointUrl + parkingLotAddress + "/vehicle/" + fakeLicenseNumber + "/session")
+                            .content(body)
+                            .contentType(MediaType.APPLICATION_JSON_UTF8))
+                    .andDo(print())
+                    .andExpect(jsonPath("description").value(ParkingError.LICENSE_NUMBER_NO_HAVE_OPEN_SESSION_1055.getDescription()))
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                    .andExpect(status().isInternalServerError());
+        }
 
-    @Test
-    @Transactional
-    @Rollback
-    void error_1005_test() throws Exception {
-        createParkingLot();
-        createNewUser(userBalance0);
-        NewSessionApiRequest request = new NewSessionApiRequest(walidLicenseNumber);
-        String body = (new ObjectMapper()).valueToTree(request).toString();
-        this.mockMvc.perform(
-                MockMvcRequestBuilders.post("/pms/v1/assets/" + parkingLotAddress + "/sessions")
-                        .content(body)
-                        .contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("description").value(ParkingError.USER_BALANCE_TOO_LOW_FOR_OPEN_SESSION_1005.getDescription()))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                .andExpect(status().isNoContent());
-    }
-
-    @Test
-    @Transactional
-    @Rollback
-    void error_1006_test() throws Exception {
-        createParkingLot();
-        UserEntity user = createNewUser(userBalance0);
-        saveNewEndedSession(user, updateInterval, tariff, minimalAmount, minimalAmountForCredit, walidLicenseNumber);
-        NewSessionApiRequest request = new NewSessionApiRequest(walidLicenseNumber);
-        String body = (new ObjectMapper()).valueToTree(request).toString();
-        this.mockMvc.perform(
-                MockMvcRequestBuilders.post("/pms/v1/assets/" + parkingLotAddress + "/sessions")
-                        .content(body)
-                        .contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("description").value(ParkingError.CREDIT_LIMIT_TO_BIG_FOR_OPEN_SESSION_1006.getDescription()))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                .andExpect(status().isNoContent());
-    }
-
-
-    @Test
-    @Transactional
-    @Rollback
-    void validTestWithoutSessions() throws Exception {
-        createParkingLot();
-        createNewUser(userBalance30);
-        NewSessionApiRequest request = new NewSessionApiRequest(walidLicenseNumber);
-        String body = (new ObjectMapper()).valueToTree(request).toString();
-        this.mockMvc.perform(
-                MockMvcRequestBuilders.post("/pms/v1/assets/" + parkingLotAddress + "/sessions")
-                        .content(body)
-                        .contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(status().isOk())
-                .andDo(print());
-    }
-
-    @Test
-    @Transactional
-    @Rollback
-    void validTest() throws Exception {
-        createParkingLot();
-        UserEntity user = createNewUser(userBalance20);
-        saveNewEndedSession(user, updateInterval, tariff, minimalAmount, minimalAmountForCredit, walidLicenseNumber);
-        NewSessionApiRequest request = new NewSessionApiRequest(walidLicenseNumber);
-        String body = (new ObjectMapper()).valueToTree(request).toString();
-        this.mockMvc.perform(
-                MockMvcRequestBuilders.post("/pms/v1/assets/" + parkingLotAddress + "/sessions")
-                        .content(body)
-                        .contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(status().isOk())
-                .andDo(print());
+        @Test
+        @Transactional
+        @Rollback
+        void validTest() throws Exception {
+            saveNewParkingLot(parkingLotAddress, Boolean.TRUE);
+            UserEntity user = createNewUser(userBalance30);
+            saveNewSession(user, updateInterval, tariff, minimalAmount, minimalAmountForCredit, licenseNumber);
+            CloseSessionApi request = new CloseSessionApi(statusClosedSession);
+            String body = (new ObjectMapper()).valueToTree(request).toString();
+            mockMvc.perform(
+                    MockMvcRequestBuilders.post(endpointUrl + parkingLotAddress + "/vehicle/" + licenseNumber + "/session")
+                            .content(body)
+                            .contentType(MediaType.APPLICATION_JSON_UTF8))
+                    .andDo(print())
+                    .andExpect(jsonPath("status").value("stopped"))
+                    .andExpect(jsonPath("total").isNotEmpty())
+                    .andExpect(jsonPath("startedAt").isNotEmpty())
+                    .andExpect(jsonPath("stoppedAt").isNotEmpty())
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                    .andExpect(status().isOk());
+        }
     }
 
     private UserEntity createNewUser(BigDecimal userBalance) {
-        UserEntity user = new UserEntity(email, testPassword, walidLicenseNumber);
+        UserEntity user = new UserEntity(email, testPassword, licenseNumber, firstName, lastName);
         user.setBalance(userBalance);
         userRepository.save(user);
         return user;
     }
 
-    private void createParkingLot() {
-        parkingLotRepository.save(new ParkingLotEntity(parkingLotAddress, Boolean.TRUE));
+    private void saveNewParkingLot(String parkingLotAddress, boolean isEnabled) {
+        parkingLotRepository.save(new ParkingLotEntity(parkingLotAddress, isEnabled));
     }
 
     private void saveNewSession(UserEntity user, Integer updateInterval, BigDecimal tariff, BigDecimal minimalAmount, BigDecimal minimalAmountForCredit, String licensePlateNumber) {

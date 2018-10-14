@@ -28,8 +28,10 @@ public class UserRepositoryTest {
 
     private final String email = "test@email.com";
     private final String testPassword = "testPassword";
+    private final String firstName = "TestFirstName";
+    private final String lastName = "TestLastName";
     private final String licensePlateNumber = "123XYZ";
-    private final BigDecimal userBalance =  BigDecimal.valueOf(15);
+    private final BigDecimal userBalance = BigDecimal.valueOf(15);
 
 
     @Test
@@ -72,7 +74,7 @@ public class UserRepositoryTest {
 
 
     private UserEntity saveNewUser(String email, String password, String licensePlateNumber) {
-        UserEntity user = new UserEntity(email, password, licensePlateNumber);
+        UserEntity user = new UserEntity(email, password, licensePlateNumber, firstName, lastName);
         user.setBalance(userBalance);
         userRepository.save(user);
         return user;

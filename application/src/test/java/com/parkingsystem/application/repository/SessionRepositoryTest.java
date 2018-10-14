@@ -37,6 +37,8 @@ public class SessionRepositoryTest {
     private final BigDecimal minimalAmountForCredit = BigDecimal.valueOf(30.00);
     private final String email = "test@email.com";
     private final String testPassword = "testPassword";
+    private final String firstName = "TestFirstName";
+    private final String lastName = "TestLastName";
     private final String licensePlateNumber = "123XYZ";
     private final String fakeLicensePlateNumber = "fake123XYZ";
     private final BigDecimal userBalance = BigDecimal.valueOf(15);
@@ -73,16 +75,16 @@ public class SessionRepositoryTest {
     @Transactional
     void findSessionByLicensePlateNumberTest() {
         SessionEntity session = saveNewSession(createNewUser(), updateInterval, tariff, minimalAmountForCredit, licensePlateNumber);
-        SessionEntity sessionByLicPlateNumber = sessionRepository.findLastWhereEndedIsNullBy(licensePlateNumber);
+        SessionEntity sessionByLicPlateNumber = sessionRepository.findNotClosedBy(licensePlateNumber);
         assertNotNull(sessionByLicPlateNumber);
         assertEquals(session, sessionByLicPlateNumber);
         assertEquals(session.getLicensePlateNumber(), sessionByLicPlateNumber.getLicensePlateNumber());
 
-        sessionByLicPlateNumber = sessionRepository.findLastWhereEndedIsNullBy(fakeLicensePlateNumber);
+        sessionByLicPlateNumber = sessionRepository.findNotClosedBy(fakeLicensePlateNumber);
         assertNull(sessionByLicPlateNumber);
 
         session.setEndedAt(LocalDateTime.now());
-        sessionByLicPlateNumber = sessionRepository.findLastWhereEndedIsNullBy(licensePlateNumber);
+        sessionByLicPlateNumber = sessionRepository.findNotClosedBy(licensePlateNumber);
         assertNull(sessionByLicPlateNumber);
     }
 
@@ -102,8 +104,21 @@ public class SessionRepositoryTest {
 
     }
 
+    @Test
+    @Rollback
+    @Transactional
+    void findStartedAndNotClosedSessionByPlateLicNumberTest() {
+        UserEntity user = createNewUser();
+        SessionEntity sessionEntity = saveNewSession(user, updateInterval, tariff, minimalAmountForCredit, licensePlateNumber);
+        SessionEntity notExistSession = sessionRepository.findStartedAndNotClosedSessionBy(fakeLicensePlateNumber);
+        assertNull(notExistSession);
+        SessionEntity validSession = sessionRepository.findStartedAndNotClosedSessionBy(licensePlateNumber);
+        assertNotNull(validSession);
+        assertEquals(sessionEntity, validSession);
+    }
+
     private UserEntity createNewUser() {
-        UserEntity user = new UserEntity(email, testPassword, licensePlateNumber);
+        UserEntity user = new UserEntity(email, testPassword, licensePlateNumber, firstName, lastName);
         user.setBalance(userBalance);
         userRepository.save(user);
         return user;

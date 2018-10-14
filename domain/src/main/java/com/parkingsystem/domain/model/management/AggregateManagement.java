@@ -1,7 +1,5 @@
 package com.parkingsystem.domain.model.management;
 
-import com.parkingsystem.domain.errors.BaseError;
-import com.parkingsystem.domain.errors.DomainException;
 import com.parkingsystem.domain.errors.ManagementError;
 import com.parkingsystem.domain.repository.ParkingLotRepository;
 import com.parkingsystem.domain.sevice.ApiVersion;
@@ -19,21 +17,15 @@ public class AggregateManagement implements ManagementService {
     private ParkingLotRepository parkingLotRepository;
 
     public void save(ApiVersion apiVersion, NewParkingLot newParkingLot) {
-        try {
-            if (StringUtils.isEmpty(newParkingLot.getAddress()))
-                ManagementError.IS_EMPTY_ADDRESS_2001.doThrow();
-            if (StringUtils.isEmpty(newParkingLot.getIsEnabled()))
-                ManagementError.IS_EMPTY_ENABLED_2002.doThrow();
 
-            if (ApiVersion.V2.equals(apiVersion)) log.info("execute some api v2 logic");
-            ParkingLotEntity parkingLotEntity = new ParkingLotEntity(newParkingLot.getAddress(), newParkingLot.getIsEnabled());
-            parkingLotRepository.save(parkingLotEntity);
-            log.info("ParkingLot saved. Id=" + parkingLotEntity.getId());
-        } catch (DomainException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("Saving process error", e);
-            BaseError.INTERNAL_SERV_ERROR.doThrow();
-        }
+        if (StringUtils.isEmpty(newParkingLot.getAddress()))
+            ManagementError.IS_EMPTY_ADDRESS_2001.doThrow();
+        if (StringUtils.isEmpty(newParkingLot.getIsEnabled()))
+            ManagementError.IS_EMPTY_ENABLED_2002.doThrow();
+
+        if (ApiVersion.V2.equals(apiVersion)) log.info("execute some api v2 logic");
+        ParkingLotEntity parkingLotEntity = new ParkingLotEntity(newParkingLot.getAddress(), newParkingLot.getIsEnabled());
+        parkingLotRepository.save(parkingLotEntity);
+        log.info("ParkingLot saved. Id=" + parkingLotEntity.getId());
     }
 }

@@ -3,12 +3,12 @@ package com.parkingsystem.application.unit;
 
 import com.parkingsystem.domain.sevice.PriceEngine;
 import org.junit.jupiter.api.Test;
-import parkingengine.SimplePriceEngine;
+import components.SimplePriceEngine;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class PriceEngineTest {
     private final Integer updateInterval = 15;

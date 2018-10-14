@@ -21,6 +21,12 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "FIRST_NAME", nullable = false)
+    private String firstName;
+
+    @Column(name = "LAST_NAME", nullable = false)
+    private String lastName;
+
     @Column(name = "EMAIL", nullable = false, updatable = false, unique = true)
     private String email;
 
@@ -37,9 +43,11 @@ public class UserEntity {
     @CreationTimestamp
     private LocalDateTime created;
 
-    public UserEntity(String email, String password, String licensePlateNumber) {
+    public UserEntity(String email, String password, String licensePlateNumber, String firstName, String lastName) {
         this.email = email;
         this.password = password;
         this.licensePlateNumber = licensePlateNumber;
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
 }
