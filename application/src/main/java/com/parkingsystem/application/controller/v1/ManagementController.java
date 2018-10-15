@@ -25,6 +25,6 @@ public class ManagementController {
     @PostMapping(path = "parkinglots", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.OK)
     public void save(@RequestBody NewParkingLotApiRequest request) {
-            managementService.save(ApiVersion.V1, transformer.toDomain(request));
+        managementService.save(ApiVersion.V1, transformer.toDomain(request));
     }
 }

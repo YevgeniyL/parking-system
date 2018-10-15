@@ -29,4 +29,8 @@ public enum ParkingError {
     public void doThrow() {
         throw new DomainException(this.httpStatus, this.code, this.description);
     }
+
+    public void doThrow(String logDetails) {
+        throw new DomainException(this.httpStatus, this.code, this.description, logDetails);
+    }
 }

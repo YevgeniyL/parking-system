@@ -56,28 +56,29 @@ public class AggregateParking implements ParkingService {
 
         final ParkingLotEntity parkingLot = parkingLotRepository.findBy(parkingAddress);
         if (parkingLot == null)
-            ParkingError.PARKING_ADDRESS_IS_NOT_EXIST_1002.doThrow();
+            ParkingError.PARKING_ADDRESS_IS_NOT_EXIST_1002.doThrow("requested parkingAddress=" + parkingAddress);
 
         if (!parkingLot.getIsEnabled())
             ParkingError.PARKING_LOT_IS_NOT_WORKING_1007.doThrow();
 
         final UserEntity user = userRepository.find(newSession.getLicensePlateNumber());
         if (user == null)
-            ParkingError.LICENSE_NUMBER_NOT_EXIST_1003.doThrow();
+            ParkingError.LICENSE_NUMBER_NOT_EXIST_1003.doThrow("requested licPlateNumber=" + newSession.getLicensePlateNumber());
 
         final SessionEntity openSession = sessionRepository.findNotClosedBy(newSession.getLicensePlateNumber());
-        if (openSession != null) {
-            log.error(MessageFormat.format("System contain not ended parking session for user=[{0}] for licensePlateNumber=[{1}]", user.getEmail(), newSession.getLicensePlateNumber()));
-            ParkingError.LICENSE_NUMBER_HAVE_OPEN_SESSION_1004.doThrow();
-        }
+        if (openSession != null)
+            ParkingError.LICENSE_NUMBER_HAVE_OPEN_SESSION_1004
+                    .doThrow(MessageFormat.format("requested licensePlateNumber=[{0}] but system contain not ended parking session with user=[{1}] and licensePlateNumber=[{1}]", newSession.getLicensePlateNumber(), user.getEmail(), openSession.getLicensePlateNumber()));
 
         final BigDecimal userBalance = user.getBalance();
         if (userBalance.compareTo(minimalAmount) <= 0) {
             if (sessionRepository.findAnyOneByUser(user) == null)
-                ParkingError.USER_BALANCE_TOO_LOW_FOR_OPEN_SESSION_1005.doThrow();
+                ParkingError.USER_BALANCE_TOO_LOW_FOR_OPEN_SESSION_1005
+                        .doThrow(MessageFormat.format("user have no one sessions on past and try to open new session with balance=[{0}], but system have minimal amount=[{1}]", user.getBalance(), minimalAmount));
 
             if (userBalance.compareTo(minimalAmountForCredit) <= 0)
-                ParkingError.CREDIT_LIMIT_TO_BIG_FOR_OPEN_SESSION_1006.doThrow();
+                ParkingError.CREDIT_LIMIT_TO_BIG_FOR_OPEN_SESSION_1006
+                        .doThrow(MessageFormat.format("user have sessions on past, but try to open new session with balance=[{0}], but system have minimal credit amount=[{1}]", user.getBalance(), minimalAmountForCredit));
         }
 
         if (ApiVersion.V2.equals(apiVersion)) log.info("execute some api v2 logic");
