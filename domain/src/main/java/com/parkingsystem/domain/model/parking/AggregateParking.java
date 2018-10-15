@@ -67,7 +67,7 @@ public class AggregateParking implements ParkingService {
 
         final SessionEntity openSession = sessionRepository.findNotClosedBy(newSession.getLicensePlateNumber());
         if (openSession != null) {
-            log.error(MessageFormat.format("System contain not ended parking session for user %s for licensePlateNumber %s", user.getEmail(), newSession.getLicensePlateNumber()));
+            log.error(MessageFormat.format("System contain not ended parking session for user=[{0}] for licensePlateNumber=[{1}]", user.getEmail(), newSession.getLicensePlateNumber()));
             ParkingError.LICENSE_NUMBER_HAVE_OPEN_SESSION_1004.doThrow();
         }
 
@@ -97,7 +97,7 @@ public class AggregateParking implements ParkingService {
 
         SessionEntity session = sessionRepository.findStartedAndNotClosedSessionBy(licencePlateNumber);
         if (session == null) {
-            log.warn(MessageFormat.format("User try ride out with fake licPlate number %s", licencePlateNumber));
+            log.warn(MessageFormat.format("User try ride out with fake licPlate number=[{0}]", licencePlateNumber));
             ParkingError.LICENSE_NUMBER_NO_HAVE_OPEN_SESSION_1055.doThrow();
         }
 
@@ -121,7 +121,7 @@ public class AggregateParking implements ParkingService {
         try {
             emailService.sendMessage(emailMessage);
         } catch (Exception e) {
-            log.error("Error on sending email after close parking session");
+            log.error(MessageFormat.format("Error on sending email after close parking session to [{0}]", emailMessage.getSendTo()));
         }
     }
 

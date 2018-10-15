@@ -33,7 +33,7 @@ public class ManagementMicroserviceTest {
                 MockMvcRequestBuilders.post("/pms/v1/management/parkinglots")
                         .content(body)
                         .contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(status().isPartialContent())
+                .andExpect(status().is(ManagementError.IS_EMPTY_ADDRESS_2001.getHttpStatus().getCode()))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
                 .andExpect(jsonPath("description").value(ManagementError.IS_EMPTY_ADDRESS_2001.getDescription()));
     }
@@ -46,7 +46,7 @@ public class ManagementMicroserviceTest {
                 MockMvcRequestBuilders.post("/pms/v1/management/parkinglots")
                         .content(body)
                         .contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(status().isPartialContent())
+                .andExpect(status().is(ManagementError.IS_EMPTY_ENABLED_2002.getHttpStatus().getCode()))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
                 .andExpect(jsonPath("description").value(ManagementError.IS_EMPTY_ENABLED_2002.getDescription()));
     }

@@ -1,35 +1,35 @@
 package com.parkingsystem.infrastructure.api.exception;
 
-import org.springframework.http.HttpStatus;
+import com.parkingsystem.domain.errors.DomainException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
-import static org.springframework.core.annotation.AnnotatedElementUtils.findMergedAnnotation;
 
 
 /**
  * Converter domain exceptions to API exception with http-statuses
  */
-@ControllerAdvice
+@RestControllerAdvice
+@Slf4j
 class HttpExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(DomainToHttpExceptionsConverter.class)
+    @ExceptionHandler(DomainException.class)
     @ResponseBody
-    ResponseEntity<ApiErrorMessage> handleRequestErrorMyException(DomainToHttpExceptionsConverter exception) {
-        HttpStatus responseStatus = resolveAnnotatedResponseStatus(exception);
-        ApiErrorMessage apiErrorMessage = new ApiErrorMessage(exception.getDescription());
-        return new ResponseEntity<>(apiErrorMessage, responseStatus);
+    ResponseEntity<ApiErrorMessage> handleRequestErrorMyException(DomainException exception) {
+        return ResponseEntity
+                .status(exception.getHttpStatus().getCode())
+                .body(new ApiErrorMessage(exception.getDescription()));
     }
 
-    HttpStatus resolveAnnotatedResponseStatus(Exception exception) {
-        ResponseStatus annotation = findMergedAnnotation(exception.getClass(), ResponseStatus.class);
-        if (annotation != null) {
-            return annotation.value();
-        }
-        return HttpStatus.INTERNAL_SERVER_ERROR;
+    @ExceptionHandler(Exception.class)
+    @ResponseBody
+    ResponseEntity<ApiErrorMessage> handleRequestErrorMyException(Exception exception) {
+        log.error("Internal server error. " + exception.getLocalizedMessage());
+        return ResponseEntity
+                .status(500)
+                .body(new ApiErrorMessage("Internal server error. " + exception.getLocalizedMessage()));
     }
 }

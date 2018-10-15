@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class DomainException extends RuntimeException {
+    private CustomHttpStatus httpStatus;
     private String code;
     private String description;
 }

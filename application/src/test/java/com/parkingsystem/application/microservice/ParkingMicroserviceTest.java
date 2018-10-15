@@ -99,7 +99,7 @@ public class ParkingMicroserviceTest {
                     .andDo(print())
                     .andExpect(jsonPath("description").value(ParkingError.IS_EMPTY_LICENSE_NUMBER_1001.getDescription()))
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                    .andExpect(status().isPartialContent());
+                    .andExpect(status().is(ParkingError.IS_EMPTY_LICENSE_NUMBER_1001.getHttpStatus().getCode()));
         }
 
         @Test
@@ -113,7 +113,7 @@ public class ParkingMicroserviceTest {
                     .andDo(print())
                     .andExpect(jsonPath("description").value(ParkingError.PARKING_ADDRESS_IS_NOT_EXIST_1002.getDescription()))
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                    .andExpect(status().isInternalServerError());
+                    .andExpect(status().is(ParkingError.PARKING_ADDRESS_IS_NOT_EXIST_1002.getHttpStatus().getCode()));
         }
 
         @Test
@@ -130,7 +130,7 @@ public class ParkingMicroserviceTest {
                     .andDo(print())
                     .andExpect(jsonPath("description").value(ParkingError.LICENSE_NUMBER_NOT_EXIST_1003.getDescription()))
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                    .andExpect(status().isNoContent());
+                    .andExpect(status().is(ParkingError.LICENSE_NUMBER_NOT_EXIST_1003.getHttpStatus().getCode()));
         }
 
         @Test
@@ -147,7 +147,7 @@ public class ParkingMicroserviceTest {
                     .andDo(print())
                     .andExpect(jsonPath("description").value(ParkingError.PARKING_LOT_IS_NOT_WORKING_1007.getDescription()))
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                    .andExpect(status().isNoContent());
+                    .andExpect(status().is(ParkingError.PARKING_LOT_IS_NOT_WORKING_1007.getHttpStatus().getCode()));
         }
 
         @Test
@@ -167,7 +167,7 @@ public class ParkingMicroserviceTest {
                     .andDo(print())
                     .andExpect(jsonPath("description").value(ParkingError.LICENSE_NUMBER_HAVE_OPEN_SESSION_1004.getDescription()))
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                    .andExpect(status().isInternalServerError());
+                    .andExpect(status().is(ParkingError.LICENSE_NUMBER_HAVE_OPEN_SESSION_1004.getHttpStatus().getCode()));
         }
 
         @Test
@@ -185,7 +185,7 @@ public class ParkingMicroserviceTest {
                     .andDo(print())
                     .andExpect(jsonPath("description").value(ParkingError.USER_BALANCE_TOO_LOW_FOR_OPEN_SESSION_1005.getDescription()))
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                    .andExpect(status().isNoContent());
+                    .andExpect(status().is(ParkingError.USER_BALANCE_TOO_LOW_FOR_OPEN_SESSION_1005.getHttpStatus().getCode()));
         }
 
         @Test
@@ -204,7 +204,7 @@ public class ParkingMicroserviceTest {
                     .andDo(print())
                     .andExpect(jsonPath("description").value(ParkingError.CREDIT_LIMIT_TO_BIG_FOR_OPEN_SESSION_1006.getDescription()))
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                    .andExpect(status().isNoContent());
+                    .andExpect(status().is(ParkingError.CREDIT_LIMIT_TO_BIG_FOR_OPEN_SESSION_1006.getHttpStatus().getCode()));
         }
 
 
@@ -264,7 +264,7 @@ public class ParkingMicroserviceTest {
                     .andDo(print())
                     .andExpect(jsonPath("description").value(ParkingError.IS_EMPTY_STATUS_1051.getDescription()))
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                    .andExpect(status().isInternalServerError());
+                    .andExpect(status().is(ParkingError.IS_EMPTY_STATUS_1051.getHttpStatus().getCode()));
         }
 
         @Test
@@ -278,7 +278,7 @@ public class ParkingMicroserviceTest {
                     .andDo(print())
                     .andExpect(jsonPath("description").value(ParkingError.IS_NOT_STOPPED_STATUS_1053.getDescription()))
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                    .andExpect(status().isInternalServerError());
+                    .andExpect(status().is(ParkingError.IS_NOT_STOPPED_STATUS_1053.getHttpStatus().getCode()));
         }
 
         @Test
@@ -294,7 +294,7 @@ public class ParkingMicroserviceTest {
                     .andDo(print())
                     .andExpect(jsonPath("description").value(ParkingError.PARKING_ADDRESS_IS_NOT_EXIST_1054.getDescription()))
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                    .andExpect(status().isInternalServerError());
+                    .andExpect(status().is(ParkingError.PARKING_ADDRESS_IS_NOT_EXIST_1054.getHttpStatus().getCode()));
         }
 
         @Test
@@ -313,7 +313,7 @@ public class ParkingMicroserviceTest {
                     .andDo(print())
                     .andExpect(jsonPath("description").value(ParkingError.LICENSE_NUMBER_NO_HAVE_OPEN_SESSION_1055.getDescription()))
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                    .andExpect(status().isInternalServerError());
+                    .andExpect(status().is(ParkingError.LICENSE_NUMBER_NO_HAVE_OPEN_SESSION_1055.getHttpStatus().getCode()));
         }
 
         @Test

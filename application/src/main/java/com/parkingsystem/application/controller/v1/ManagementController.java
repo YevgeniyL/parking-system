@@ -1,9 +1,7 @@
 package com.parkingsystem.application.controller.v1;
 
-import com.parkingsystem.domain.errors.DomainException;
 import com.parkingsystem.domain.sevice.ApiVersion;
 import com.parkingsystem.domain.sevice.management.ManagementService;
-import com.parkingsystem.infrastructure.api.exception.DomainToHttpExceptionsConverter;
 import com.parkingsystem.infrastructure.api.v1.management.ManagementTransformer;
 import com.parkingsystem.infrastructure.api.v1.management.NewParkingLotApiRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -27,12 +25,6 @@ public class ManagementController {
     @PostMapping(path = "parkinglots", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.OK)
     public void save(@RequestBody NewParkingLotApiRequest request) {
-        try {
             managementService.save(ApiVersion.V1, transformer.toDomain(request));
-        } catch (DomainException e) {
-            throw new DomainToHttpExceptionsConverter(e);
-        } catch (Exception e) {
-            throw new DomainToHttpExceptionsConverter(e);
-        }
     }
 }
