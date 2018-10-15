@@ -9,7 +9,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 
 @Slf4j
 @Configuration
-public class MailResendListener implements ApplicationListener<ContextRefreshedEvent> {
+public class ParkingSystemResendListener implements ApplicationListener<ContextRefreshedEvent> {
     @Autowired
     private EmailService emailService;
 

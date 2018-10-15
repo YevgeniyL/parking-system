@@ -82,7 +82,7 @@ public class AggregateParking implements ParkingService {
         }
 
         if (ApiVersion.V2.equals(apiVersion)) log.info("execute some api v2 logic");
-        sessionRepository.save(new SessionEntity(user, roundInterval, tariff, userBalance, minimalAmount, minimalAmountForCredit, newSession.getLicensePlateNumber()));
+        sessionRepository.save(new SessionEntity(user, parkingLot, roundInterval, tariff, userBalance, minimalAmount, minimalAmountForCredit, newSession.getLicensePlateNumber()));
     }
 
     @Override
@@ -98,8 +98,7 @@ public class AggregateParking implements ParkingService {
 
         SessionEntity session = sessionRepository.findStartedAndNotClosedSessionBy(licencePlateNumber);
         if (session == null) {
-            log.warn(MessageFormat.format("User try ride out with fake licPlate number=[{0}]", licencePlateNumber));
-            ParkingError.LICENSE_NUMBER_NO_HAVE_OPEN_SESSION_1055.doThrow();
+            ParkingError.LICENSE_NUMBER_NO_HAVE_OPEN_SESSION_1055.doThrow(MessageFormat.format("User try ride out with fake licPlate number=[{0}]", licencePlateNumber));
         }
 
         if (ApiVersion.V2.equals(apiVersion)) log.info("execute some api v2 logic");
@@ -127,13 +126,11 @@ public class AggregateParking implements ParkingService {
     }
 
     private String buildCloseSessionText(SessionEntity session) {
-        StringBuilder message = new StringBuilder();
-        message.append("<h1>Dear ").append(session.getUser().getFirstName()).append(" ").append(session.getUser().getLastName()).append(" </h1>")
-                .append("<h2>You are using TEST_PARKING:</h2>")
-                .append("<p>session start time: ").append(session.getStartedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))).append("</p>")
-                .append("<p>stop time: ").append(session.getStartedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))).append("</p>")
-                .append("<p>vehicle number: ").append(session.getLicensePlateNumber()).append("</p>")
-                .append("<p>total cost of the sessioncharged: ").append(session.getTotalCost()).append("</p>");
-        return message.toString();
+        return "<h1>Dear " + session.getUser().getFirstName() + " " + session.getUser().getLastName() + " </h1>" +
+                "<h2>You are using TEST_PARKING:</h2>" +
+                "<p>session start time: " + session.getStartedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) + "</p>" +
+                "<p>stop time: " + session.getStartedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) + "</p>" +
+                "<p>vehicle number: " + session.getLicensePlateNumber() + "</p>" +
+                "<p>total cost of the sessioncharged: " + session.getTotalCost() + "</p>";
     }
 }

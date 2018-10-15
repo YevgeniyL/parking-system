@@ -3,7 +3,6 @@ package com.parkingsystem.infrastructure.repository;
 import com.parkingsystem.domain.model.management.ParkingLotEntity;
 import com.parkingsystem.domain.repository.ParkingLotRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +18,7 @@ public class ParkingLotRepositoryImpl implements ParkingLotRepository {
 
     @Override
     @Transactional
-    public void save(ParkingLotEntity parkingLotEntity) throws DataIntegrityViolationException {
+    public void save(ParkingLotEntity parkingLotEntity){
         simpleRepository.save(parkingLotEntity);
     }
 

@@ -64,6 +64,12 @@
             <version>3.7.0</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>io.codearte.jfairy</groupId>
+            <artifactId>jfairy</artifactId>
+            <version>0.5.9</version>
+            <scope>compile</scope>
+        </dependency>
 
         <!--not provided any longer by default in Java 9-->
         <dependency>

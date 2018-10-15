@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @SpringBootTest
 public class ParkingMicroserviceTest {
-    private final String endpointUrl = "/pms/v1/assets/";
+    private final String endpointUrl = "/v1/assets/";
     private final String parkingLotAddress = "testUrl";
     private final String notExistParkingLotAddress = "testUrlNotExist";
     private final String licenseNumber = "123XYZ";
@@ -66,17 +66,19 @@ public class ParkingMicroserviceTest {
         return user;
     }
 
-    private void saveNewParkingLot(String parkingLotAddress, boolean isEnabled) {
-        parkingLotRepository.save(new ParkingLotEntity(parkingLotAddress, isEnabled));
+    private ParkingLotEntity saveNewParkingLot(String parkingLotAddress, boolean isEnabled) {
+        ParkingLotEntity parkingLotEntity = new ParkingLotEntity(parkingLotAddress, isEnabled);
+        parkingLotRepository.save(parkingLotEntity);
+        return parkingLotEntity;
     }
 
-    private void saveNewSession(UserEntity user, Integer updateInterval, BigDecimal tariff, BigDecimal minimalAmount, BigDecimal minimalAmountForCredit, String licensePlateNumber) {
-        SessionEntity session = new SessionEntity(user, updateInterval, tariff, user.getBalance(), minimalAmount, minimalAmountForCredit, licensePlateNumber);
+    private void saveNewSession(UserEntity user, ParkingLotEntity parkingLotEntity, Integer updateInterval, BigDecimal tariff, BigDecimal minimalAmount, BigDecimal minimalAmountForCredit, String licensePlateNumber) {
+        SessionEntity session = new SessionEntity(user, parkingLotEntity, updateInterval, tariff, user.getBalance(), minimalAmount, minimalAmountForCredit, licensePlateNumber);
         sessionRepository.save(session);
     }
 
-    private void saveNewEndedSession(UserEntity user, Integer updateInterval, BigDecimal tariff, BigDecimal minimalAmount, BigDecimal minimalAmountForCredit, String licensePlateNumber) {
-        SessionEntity session = new SessionEntity(user, updateInterval, tariff, user.getBalance(), minimalAmount, minimalAmountForCredit, licensePlateNumber);
+    private void saveNewEndedSession(UserEntity user, ParkingLotEntity parkingLotEntity, Integer updateInterval, BigDecimal tariff, BigDecimal minimalAmount, BigDecimal minimalAmountForCredit, String licensePlateNumber) {
+        SessionEntity session = new SessionEntity(user, parkingLotEntity, updateInterval, tariff, user.getBalance(), minimalAmount, minimalAmountForCredit, licensePlateNumber);
         session.setEndedAt(LocalDateTime.now());
         sessionRepository.save(session);
     }
@@ -154,9 +156,9 @@ public class ParkingMicroserviceTest {
         @Transactional
         @Rollback
         void error_1004_test() throws Exception {
-            saveNewParkingLot(parkingLotAddress, Boolean.TRUE);
+            ParkingLotEntity parkingLotEntity = saveNewParkingLot(parkingLotAddress, Boolean.TRUE);
             UserEntity user = createNewUser(userBalance0);
-            saveNewSession(user, updateInterval, tariff, minimalAmount, minimalAmountForCredit, licenseNumber);
+            saveNewSession(user, parkingLotEntity, updateInterval, tariff, minimalAmount, minimalAmountForCredit, licenseNumber);
 
             NewSessionApiRequest request = new NewSessionApiRequest(licenseNumber);
             String body = (new ObjectMapper()).valueToTree(request).toString();
@@ -192,9 +194,9 @@ public class ParkingMicroserviceTest {
         @Transactional
         @Rollback
         void error_1006_test() throws Exception {
-            saveNewParkingLot(parkingLotAddress, Boolean.TRUE);
+            ParkingLotEntity parkingLotEntity = saveNewParkingLot(parkingLotAddress, Boolean.TRUE);
             UserEntity user = createNewUser(userBalance0);
-            saveNewEndedSession(user, updateInterval, tariff, minimalAmount, minimalAmountForCredit, licenseNumber);
+            saveNewEndedSession(user, parkingLotEntity, updateInterval, tariff, minimalAmount, minimalAmountForCredit, licenseNumber);
             NewSessionApiRequest request = new NewSessionApiRequest(licenseNumber);
             String body = (new ObjectMapper()).valueToTree(request).toString();
             mockMvc.perform(
@@ -229,9 +231,9 @@ public class ParkingMicroserviceTest {
         @Transactional
         @Rollback
         void validTest() throws Exception {
-            saveNewParkingLot(parkingLotAddress, Boolean.TRUE);
+            ParkingLotEntity parkingLotEntity = saveNewParkingLot(parkingLotAddress, Boolean.TRUE);
             UserEntity user = createNewUser(userBalance20);
-            saveNewEndedSession(user, updateInterval, tariff, minimalAmount, minimalAmountForCredit, licenseNumber);
+            saveNewEndedSession(user, parkingLotEntity, updateInterval, tariff, minimalAmount, minimalAmountForCredit, licenseNumber);
             NewSessionApiRequest request = new NewSessionApiRequest(licenseNumber);
             String body = (new ObjectMapper()).valueToTree(request).toString();
             mockMvc.perform(
@@ -302,8 +304,8 @@ public class ParkingMicroserviceTest {
         @Rollback
         void LICENSE_NUMBER_NO_HAVE_OPEN_SESSION_1055_TEST() throws Exception {
             UserEntity user = createNewUser(userBalance0);
-            saveNewParkingLot(parkingLotAddress, Boolean.TRUE);
-            saveNewSession(user, updateInterval, tariff, minimalAmount, minimalAmountForCredit, licenseNumber);
+            ParkingLotEntity parkingLotEntity = saveNewParkingLot(parkingLotAddress, Boolean.TRUE);
+            saveNewSession(user, parkingLotEntity, updateInterval, tariff, minimalAmount, minimalAmountForCredit, licenseNumber);
             CloseSessionApi request = new CloseSessionApi(statusClosedSession);
             String body = (new ObjectMapper()).valueToTree(request).toString();
             mockMvc.perform(
@@ -320,9 +322,9 @@ public class ParkingMicroserviceTest {
         @Transactional
         @Rollback
         void validTest() throws Exception {
-            saveNewParkingLot(parkingLotAddress, Boolean.TRUE);
+            ParkingLotEntity parkingLotEntity = saveNewParkingLot(parkingLotAddress, Boolean.TRUE);
             UserEntity user = createNewUser(userBalance30);
-            saveNewSession(user, updateInterval, tariff, minimalAmount, minimalAmountForCredit, licenseNumber);
+            saveNewSession(user, parkingLotEntity, updateInterval, tariff, minimalAmount, minimalAmountForCredit, licenseNumber);
             CloseSessionApi request = new CloseSessionApi(statusClosedSession);
             String body = (new ObjectMapper()).valueToTree(request).toString();
             mockMvc.perform(

@@ -1,10 +1,10 @@
 package com.parkingsystem.domain.model.parking;
 
+import com.parkingsystem.domain.model.management.ParkingLotEntity;
 import com.parkingsystem.domain.model.management.UserEntity;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
@@ -13,10 +13,9 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "SESSION")
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
 public class SessionEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,10 +24,6 @@ public class SessionEntity {
     @Column(name = "STARTED_AT", nullable = false, updatable = false)
     @CreationTimestamp
     private LocalDateTime startedAt;
-
-    @ManyToOne
-    @JoinColumn(name = "USER_ID", referencedColumnName = "ID")
-    private UserEntity user;
 
     @Column(name = "ENDED_AT")
     private LocalDateTime endedAt;
@@ -54,8 +49,17 @@ public class SessionEntity {
     @Column(name = "TOTAL_COST")
     private BigDecimal totalCost;
 
-    public SessionEntity(UserEntity user, Integer roundInterval, BigDecimal tariff, BigDecimal userBalance, BigDecimal minimalAmount, BigDecimal minimalAmountForCredit, String licensePlateNumber) {
+    @ManyToOne
+    @JoinColumn(name = "PARKING_LOT_ID", referencedColumnName = "ID")
+    private ParkingLotEntity parkingLot;
+
+    @ManyToOne
+    @JoinColumn(name = "USER_ID", referencedColumnName = "ID")
+    private UserEntity user;
+
+    public SessionEntity(UserEntity user, ParkingLotEntity parkingLot, Integer roundInterval, BigDecimal tariff, BigDecimal userBalance, BigDecimal minimalAmount, BigDecimal minimalAmountForCredit, String licensePlateNumber) {
         this.user = user;
+        this.parkingLot = parkingLot;
         this.roundInterval = roundInterval;
         this.tariff = tariff;
         this.userBalance = userBalance;

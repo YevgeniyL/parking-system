@@ -30,7 +30,7 @@ public class ManagementMicroserviceTest {
         NewParkingLotApiRequest request = new NewParkingLotApiRequest(null, true);
         String body = (new ObjectMapper()).valueToTree(request).toString();
         this.mockMvc.perform(
-                MockMvcRequestBuilders.post("/pms/v1/management/parkinglots")
+                MockMvcRequestBuilders.post("/v1/management/parkinglots")
                         .content(body)
                         .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().is(ManagementError.IS_EMPTY_ADDRESS_2001.getHttpStatus().getCode()))
@@ -43,7 +43,7 @@ public class ManagementMicroserviceTest {
         NewParkingLotApiRequest request = new NewParkingLotApiRequest("SomeAddr", null);
         String body = (new ObjectMapper()).valueToTree(request).toString();
         this.mockMvc.perform(
-                MockMvcRequestBuilders.post("/pms/v1/management/parkinglots")
+                MockMvcRequestBuilders.post("/v1/management/parkinglots")
                         .content(body)
                         .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().is(ManagementError.IS_EMPTY_ENABLED_2002.getHttpStatus().getCode()))
@@ -58,7 +58,7 @@ public class ManagementMicroserviceTest {
         NewParkingLotApiRequest request = new NewParkingLotApiRequest("SomeAddr", true);
         String body = (new ObjectMapper()).valueToTree(request).toString();
         this.mockMvc.perform(
-                MockMvcRequestBuilders.post("/pms/v1/management/parkinglots")
+                MockMvcRequestBuilders.post("/v1/management/parkinglots")
                         .content(body)
                         .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk());

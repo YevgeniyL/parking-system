@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 
 @RestController
-@RequestMapping("/pms/v1")
+@RequestMapping("/v1/assets")
 @Slf4j
 public class ParkingController {
 
@@ -26,7 +26,7 @@ public class ParkingController {
     private ParkingTransformer transformer;
 
     @Transactional
-    @PostMapping(path = "/assets/{asset}/sessions", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(path = "/{asset}/sessions", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.OK)
     public void createSession(@PathVariable("asset") String parkingAddress, @RequestBody NewSessionApiRequest request) {
         parkingService.createSession(ApiVersion.V1, transformer.toDomain(request), parkingAddress);
@@ -34,7 +34,7 @@ public class ParkingController {
 
 
     @Transactional
-    @PostMapping(path = "/assets/{asset}/vehicle/{licencePlateNumber}/session", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(path = "/{asset}/vehicle/{licencePlateNumber}/session", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.OK)
     public CloseSessionResponseApi closeSession(@PathVariable("asset") String parkingAddress,
                                                 @PathVariable("licencePlateNumber") String licencePlateNumber,

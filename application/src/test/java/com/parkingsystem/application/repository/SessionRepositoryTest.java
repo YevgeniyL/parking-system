@@ -1,7 +1,9 @@
 package com.parkingsystem.application.repository;
 
+import com.parkingsystem.domain.model.management.ParkingLotEntity;
 import com.parkingsystem.domain.model.management.UserEntity;
 import com.parkingsystem.domain.model.parking.SessionEntity;
+import com.parkingsystem.domain.repository.ParkingLotRepository;
 import com.parkingsystem.domain.repository.SessionRepository;
 import com.parkingsystem.domain.repository.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -41,6 +43,10 @@ public class SessionRepositoryTest {
     private SessionRepository sessionRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private ParkingLotRepository parkingLotRepository;
+
+    private final String parkingLotAddress = "testUrl";
 
     @Test
     @Rollback
@@ -55,8 +61,8 @@ public class SessionRepositoryTest {
         int count = ((Number) entityManager.createQuery("SELECT COUNT (*) FROM SessionEntity").getSingleResult()).intValue();
         assertEquals(0, count);
         UserEntity user = createNewUser();
-
-        SessionEntity session = saveNewSession(user, updateInterval, tariff, minimalAmountForCredit, licensePlateNumber);
+        ParkingLotEntity parkingLotEntity = saveNewParkingLot(parkingLotAddress, Boolean.TRUE);
+        SessionEntity session = saveNewSession(user, parkingLotEntity, updateInterval, tariff, minimalAmountForCredit, licensePlateNumber);
         count = ((Number) entityManager.createQuery("SELECT COUNT (*) FROM SessionEntity").getSingleResult()).intValue();
         assertEquals(1, count);
         assertNotNull(session);
@@ -73,7 +79,8 @@ public class SessionRepositoryTest {
     @Rollback
     @Transactional
     void findSessionByLicensePlateNumberTest() {
-        SessionEntity session = saveNewSession(createNewUser(), updateInterval, tariff, minimalAmountForCredit, licensePlateNumber);
+        ParkingLotEntity parkingLotEntity = saveNewParkingLot(parkingLotAddress, Boolean.TRUE);
+        SessionEntity session = saveNewSession(createNewUser(), parkingLotEntity, updateInterval, tariff, minimalAmountForCredit, licensePlateNumber);
         SessionEntity sessionByLicPlateNumber = sessionRepository.findNotClosedBy(licensePlateNumber);
         assertNotNull(sessionByLicPlateNumber);
         assertEquals(session, sessionByLicPlateNumber);
@@ -94,7 +101,8 @@ public class SessionRepositoryTest {
         UserEntity user = createNewUser();
         SessionEntity anyOneSessionByUser = sessionRepository.findAnyOneByUser(user);
         assertNull(anyOneSessionByUser);
-        SessionEntity session = saveNewSession(user, updateInterval, tariff, minimalAmountForCredit, licensePlateNumber);
+        ParkingLotEntity parkingLotEntity = saveNewParkingLot(parkingLotAddress, Boolean.TRUE);
+        SessionEntity session = saveNewSession(user, parkingLotEntity, updateInterval, tariff, minimalAmountForCredit, licensePlateNumber);
 
         anyOneSessionByUser = sessionRepository.findAnyOneByUser(user);
         assertNotNull(anyOneSessionByUser);
@@ -108,7 +116,8 @@ public class SessionRepositoryTest {
     @Transactional
     void findStartedAndNotClosedSessionByPlateLicNumberTest() {
         UserEntity user = createNewUser();
-        SessionEntity sessionEntity = saveNewSession(user, updateInterval, tariff, minimalAmountForCredit, licensePlateNumber);
+        ParkingLotEntity parkingLotEntity = saveNewParkingLot(parkingLotAddress, Boolean.TRUE);
+        SessionEntity sessionEntity = saveNewSession(user, parkingLotEntity, updateInterval, tariff, minimalAmountForCredit, licensePlateNumber);
         SessionEntity notExistSession = sessionRepository.findStartedAndNotClosedSessionBy(fakeLicensePlateNumber);
         assertNull(notExistSession);
         SessionEntity validSession = sessionRepository.findStartedAndNotClosedSessionBy(licensePlateNumber);
@@ -123,9 +132,15 @@ public class SessionRepositoryTest {
         return user;
     }
 
-    private SessionEntity saveNewSession(UserEntity user, Integer updateInterval, BigDecimal tariff, BigDecimal minimalAmountForCredit, String licensePlateNumber) {
-        SessionEntity session = new SessionEntity(user, updateInterval, tariff, user.getBalance(), minimalAmount, minimalAmountForCredit, licensePlateNumber);
+    private SessionEntity saveNewSession(UserEntity user, ParkingLotEntity parkingLotEntity, Integer updateInterval, BigDecimal tariff, BigDecimal minimalAmountForCredit, String licensePlateNumber) {
+        SessionEntity session = new SessionEntity(user, parkingLotEntity, updateInterval, tariff, user.getBalance(), minimalAmount, minimalAmountForCredit, licensePlateNumber);
         sessionRepository.save(session);
         return session;
+    }
+
+    private ParkingLotEntity saveNewParkingLot(String parkingLotAddress, boolean isEnabled) {
+        ParkingLotEntity parkingLotEntity = new ParkingLotEntity(parkingLotAddress, isEnabled);
+        parkingLotRepository.save(parkingLotEntity);
+        return parkingLotEntity;
     }
 }
