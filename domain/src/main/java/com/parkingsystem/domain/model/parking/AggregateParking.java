@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -103,15 +104,17 @@ public class AggregateParking implements ParkingService {
 
         if (ApiVersion.V2.equals(apiVersion)) log.info("execute some api v2 logic");
 
-        final BigDecimal totalCost = priceEngine.calc(session.getStartedAt(), now, session.getRoundInterval(), session.getTariff());
         UserEntity user = session.getUser();
-        BigDecimal resultBalance = user.getBalance().subtract(totalCost);
+        final BigDecimal totalCost = priceEngine.calc(session.getStartedAt(), now, session.getRoundInterval(), session.getTariff());
+        final BigDecimal firstBalance = user.getBalance();
+        final BigDecimal resultBalance = firstBalance.subtract(totalCost).setScale(2, RoundingMode.HALF_UP);
         user.setBalance(resultBalance);
         userRepository.save(user);
 
         session.setEndedAt(now);
         session.setTotalCost(totalCost);
         sessionRepository.save(session);
+        log.info(String.format("User %s closed session with total cost =[%s]. Balance before parking =[%s], after close session =[%s]. Session id=[%s].", user.getEmail(), totalCost, firstBalance, resultBalance, session.getId()));
 
         new Thread(() -> sendEmail(new EmailMessage(buildCloseSessionText(session), user.getEmail(), "Invoice from test parking system", session.getId()))).run();
         return new CloseSessionResponse("stopped", totalCost, session.getStartedAt(), now);
@@ -127,7 +130,7 @@ public class AggregateParking implements ParkingService {
 
     private String buildCloseSessionText(SessionEntity session) {
         return "<h1>Dear " + session.getUser().getFirstName() + " " + session.getUser().getLastName() + " </h1>" +
-                "<h2>You are using TEST_PARKING:</h2>" +
+                "<h2>You are using TEST_PARKING:" + session.getParkingLot().getAddress() + "</h2>" +
                 "<p>session start time: " + session.getStartedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) + "</p>" +
                 "<p>stop time: " + session.getStartedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) + "</p>" +
                 "<p>vehicle number: " + session.getLicensePlateNumber() + "</p>" +

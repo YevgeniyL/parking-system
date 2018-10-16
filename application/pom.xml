@@ -126,7 +126,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <outputDirectory>${project.build.directory}/../../</outputDirectory>
-                    <finalName>parking-system-${project.parent.version}</finalName>
+                    <finalName>parking-system-${project.parent.version}-${project.activeProfiles[0].id}</finalName>
                 </configuration>
             </plugin>
         </plugins>

@@ -34,7 +34,7 @@ class HttpExceptionHandler extends ResponseEntityExceptionHandler {
         String description = exception.getDescription();
         String loggingDetails = exception.getLoggingDetails();
         log.error(MessageFormat.format(
-                "\n\n{0} -- Error in request -> [{1}]:[{2}] with sessionId =[{3}]. HttpCustomCode =[{4}]. \nCause: {5}." + buildLogDetailsPattern(loggingDetails) + "\n",
+                "\n\n{0} -- Error in request -> [{1}]:[{2}] with web-sessionId =[{3}]. HttpCustomCode =[{4}]. \nCause: {5}." + buildLogDetailsPattern(loggingDetails) + "\n",
                 LocalDateTime.now(), method, url, sessionId, code, description, buildLogDetails(loggingDetails)
         ));
 

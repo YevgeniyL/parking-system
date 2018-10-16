@@ -3,6 +3,7 @@ package components;
 import com.parkingsystem.domain.sevice.PriceEngine;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
@@ -16,8 +17,8 @@ public class SimplePriceEngine implements PriceEngine {
         final float afterPoint = updateIntervalCountFloat - (float) updateIntervalCount;
 
         if (afterPoint > 0) {
-            return tariff.multiply(BigDecimal.valueOf(updateIntervalCount + 1));
+            return tariff.multiply(BigDecimal.valueOf(updateIntervalCount + 1)).setScale(2, RoundingMode.HALF_UP);
         } else
-            return tariff.multiply(BigDecimal.valueOf(updateIntervalCount));
+            return tariff.multiply(BigDecimal.valueOf(updateIntervalCount)).setScale(2, RoundingMode.HALF_UP);
     }
 }

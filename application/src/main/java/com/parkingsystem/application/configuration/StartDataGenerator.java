@@ -13,11 +13,13 @@ import io.codearte.jfairy.Fairy;
 import io.codearte.jfairy.producer.person.Person;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,6 +32,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 public class StartDataGenerator {
 
+    private final String address = "address";
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -38,15 +41,21 @@ public class StartDataGenerator {
     private ParkingLotRepository parkingLotRepository;
     @Autowired
     private SessionSimpleRepository sessionSimpleRepository;
-
-    private final String address = "address";
+    @Value("${price.minimalAmount}")
+    private BigDecimal minimalAmount;
+    @Value("${price.minimalAmountForCredit}")
+    private BigDecimal minimalAmountForCredit;
+    @Value("${price.tariff}")
+    private BigDecimal tariff;
+    @Value("${price.roundInterval}")
+    private int roundInterval;
 
     @PostConstruct
     public void generateData() {
         List<ParkingLotEntity> parkingLotEntities = generateAddress(10);
         List<UserEntity> userEntities = generateUsers(30);
         List<SessionEntity> sessionEntities = generateSessions(parkingLotEntities, userEntities);
-        List<UserEntity> emptyUsers = generateUsers(5);
+        List<UserEntity> emptyUsers = generateUsers(10);
         printAllData(parkingLotEntities, userEntities, sessionEntities, emptyUsers);
     }
 
@@ -81,7 +90,7 @@ public class StartDataGenerator {
 
             //set random balance
             if (i % 10 != 0) {
-                userEntity.setBalance(BigDecimal.valueOf(ThreadLocalRandom.current().nextDouble(-30, 100)));
+                userEntity.setBalance(BigDecimal.valueOf(ThreadLocalRandom.current().nextDouble(-30, 100)).setScale(2, RoundingMode.HALF_UP));
             }
 
             userRepository.save(userEntity);
@@ -103,30 +112,28 @@ public class StartDataGenerator {
 
     private void printAllData(List<ParkingLotEntity> parkingLotEntities, List<UserEntity> userEntities, List<SessionEntity> sessionEntities, List<UserEntity> emptyUsers) {
         log.error("");
-        log.error("");
-        log.error("");
         log.error("------------------- Start print generated data ------------------------");
-        log.error("");
         log.error("");
         log.error("------------------- Parking lot ------------------------");
         Arrays.stream(parkingLotEntities.toArray()).forEach(p -> log.info(String.join(" ", p.toString())));
         log.error("");
-        log.error("");
         log.error("------------------- User  ------------------------");
         Arrays.stream(userEntities.toArray()).forEach(p -> log.info(String.join(" ", p.toString())));
         log.error("");
-        log.error("");
         log.error("------------------- Sessions  ------------------------");
         Arrays.stream(sessionEntities.toArray()).forEach(p -> log.info(String.join(" ", p.toString())));
-        log.error("");
         log.error("");
         log.error("------------------- Empty Users  ------------------------");
         Arrays.stream(emptyUsers.toArray()).forEach(p -> log.info(String.join(" ", p.toString())));
         log.error("");
         log.error("");
+        log.error("------------------- Application settings ------------------------");
+        log.error("minimalAmount = " + minimalAmount);
+        log.error("minimalAmountForCredit = " + minimalAmountForCredit);
+        log.error("tariff = " + tariff);
+        log.error("roundInterval = " + roundInterval);
+        log.error("");
         log.error("------------------- End print generated data ------------------------");
-        log.error("");
-        log.error("");
         log.error("");
     }
 }
